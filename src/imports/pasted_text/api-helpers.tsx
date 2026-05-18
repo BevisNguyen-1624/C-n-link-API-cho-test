@@ -3,8 +3,8 @@ import { useState, useEffect, useRef } from "react";
 // ═══════════════════════════════════════════════════════════
 //  CONFIG — đổi URL sau khi deploy Apps Script Web App
 // ═══════════════════════════════════════════════════════════
-const API_URL = "https://script.google.com/macros/s/PASTE_YOUR_DEPLOYMENT_ID/exec";
-const USE_MOCK = true; // Đổi thành false khi có API thật
+const API_URL = "https://script.google.com/macros/s/AKfycbyEgfc3ngc6-zeKeHlVeV7sJ7kEX_sD8_c4piX6PjUYnxS9qqpknrlAlkaiGey_a44/exec";
+const USE_MOCK = false; // Đổi thành false khi có API thật
 const ADMIN_PIN = "1234"; // Đổi PIN theo ý muốn
 
 // LƯU Ý KHI CHUYỂN SANG API THẬT:
@@ -21,7 +21,7 @@ const LS_KEY_ASSIGNERS = "hoYoTa_assigners"; // Danh sách người phân công
 const LS_KEY_ASSIGNMENTS = "hoYoTa_assignments"; // Phân công sáng kiến
 const LS_KEY_PROGRESS = "hoYoTa_progress"; // Tiến trình chấm
 const LS_KEY_COMPLETED = "hoYoTa_completed"; // Sáng kiến đã hoàn thành chấm
-const PROGRESS_TRACKING_URL = "https://drive.google.com/YOUR_FOLDER_URL"; // URL theo dõi tiến độ
+const PROGRESS_TRACKING_URL = "https://drive.google.com/1oHkOgPVjNrvt8-YzDsp1dWOZqaNKdklh6BTFKx6nksI"; // URL theo dõi tiến độ
 
 const DEFAULT_REVIEWERS = [
   { reviewerId: "YD0001", name: "Nguyễn Việt Hòa" },
@@ -390,7 +390,7 @@ const CRITERIA = [
   },
 ];
 
-const GOODJOB_THRESHOLD = 6;
+const GOODJOB_THRESHOLD = 7;
 
 // ═══════════════════════════════════════════════════════════
 //  STYLES — Sky / Cheerful theme
@@ -1175,12 +1175,11 @@ export default function App() {
                 <div style={S.checkCard(goodJob, "#16a34a")} onClick={() => setGoodJob((v) => !v)}>
                   <div style={{ fontSize: 22, marginBottom: 6 }}>{goodJob ? "✅" : "⬜"}</div>
                   <div style={{ fontWeight: 800, fontSize: 13, color: goodJob ? "#16a34a" : "#64748b" }}>GOOD JOB</div>
-                  <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>≥ 6 điểm</div>
+                  <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>≥ 7 điểm</div>
                 </div>
                 <div style={S.checkCard(baoVe, "#3b82f6")} onClick={() => setBaoVe((v) => !v)}>
                   <div style={{ fontSize: 22, marginBottom: 6 }}>{baoVe ? "✅" : "⬜"}</div>
                   <div style={{ fontWeight: 800, fontSize: 13, color: baoVe ? "#3b82f6" : "#64748b" }}>VÀO VÒNG BẢO VỆ</div>
-                  <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>Xứng đáng trình bày</div>
                 </div>
               </div>
 
@@ -1191,7 +1190,7 @@ export default function App() {
                 </div>
                 <textarea
                   style={S.feedbackBox}
-                  placeholder="Nhận xét, góp ý hoặc hướng dẫn cụ thể để tác giả hoàn thiện sáng kiến..."
+                  placeholder="Nhận xét, góp ý hoặc hướng dẫn cụ thể để hoàn thiện sáng kiến..."
                   value={feedback}
                   onChange={(e) => setFeedback(e.target.value)}
                   onFocus={(e) => (e.target.style.borderColor = "#38bdf8")}
