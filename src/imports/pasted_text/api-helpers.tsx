@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 
-const API_URL = "https://script.google.com/macros/s/AKfycbx2tL0manVOnye65V98QVAoho3rT6rqh7wq5-X3RGiCbIN-wW3hwxvT3oIs61XfxG4/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyiCaXKdZkOkvVgi2mTa2jqwHQZChuSToid9BN6fWgedadED8g5DWhjmz7gYiJvPMs/exec";
 const USE_MOCK = false;
 const ADMIN_PIN = "1234";
-
 const LS_KEY = "hoYoTa_reviewers";
 const LS_KEY_ASSIGNERS = "hoYoTa_assigners";
 const LS_KEY_ASSIGNMENTS = "hoYoTa_assignments";
