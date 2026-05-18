@@ -150,6 +150,175 @@ function markIdeaCompleted(ideaKey: string) {
 // localStorage (LS_KEY_COMPLETED) và sẽ KHÔNG xuất hiện lại trong
 // danh sách chấm hoặc danh sách phân công
 
+const MOCK_IDEAS = [
+  {
+    sheetName: "Phòng Kinh Doanh",
+    rowIndex: 2,
+    maNV: "NV001",
+    tenYT: "Tự động hóa quy trình báo cáo bán hàng",
+    level: "Cải tiến quy trình",
+    thuNghiem: "Chưa",
+    pbLienQuan: "Kinh doanh, IT",
+    vungPB: "Vùng 1",
+    vanDe: "Báo cáo bán hàng tốn nhiều thời gian, dễ sai sót do nhập liệu thủ công",
+    moTa: "Xây dựng dashboard tự động kết nối với CRM, cập nhật số liệu real-time",
+    hieuQua: "Tiết kiệm 10h/tuần, giảm 90% sai sót",
+    nguonLuc: "1 developer, 2 tuần",
+    giaTri: "Tăng hiệu suất team, dữ liệu chính xác hơn cho quyết định",
+    link: "https://example.com/doc1",
+    scoreN: "",
+    scoreO: "",
+    scoreP: "",
+    scoreQ: "",
+    goodJob: false,
+    baoVe: false,
+    feedback: "",
+  },
+  {
+    sheetName: "Phòng Kỹ Thuật",
+    rowIndex: 5,
+    maNV: "NV102",
+    tenYT: "Hệ thống quản lý bảo trì máy móc thông minh",
+    level: "Sáng tạo mới",
+    thuNghiem: "Đã thử nghiệm",
+    pbLienQuan: "Kỹ thuật, Sản xuất",
+    vungPB: "Vùng 2",
+    vanDe: "Không có lịch bảo trì rõ ràng, máy móc thường hỏng đột xuất gây gián đoạn sản xuất",
+    moTa: "Xây dựng app mobile quản lý lịch bảo trì định kỳ, cảnh báo sớm khi thiết bị cần kiểm tra",
+    hieuQua: "Giảm 40% thời gian downtime, tăng tuổi thọ máy móc",
+    nguonLuc: "App có sẵn, cần 1 tuần setup và training",
+    giaTri: "Tăng năng suất sản xuất, giảm chi phí sửa chữa khẩn cấp",
+    link: "",
+    scoreN: "",
+    scoreO: "",
+    scoreP: "",
+    scoreQ: "",
+    goodJob: false,
+    baoVe: false,
+    feedback: "",
+  },
+  {
+    sheetName: "Phòng Kinh Doanh",
+    rowIndex: 8,
+    maNV: "NV045",
+    tenYT: "Chương trình khách hàng thân thiết",
+    level: "Cải tiến sản phẩm/dịch vụ",
+    thuNghiem: "Chưa",
+    pbLienQuan: "Kinh doanh, Marketing",
+    vungPB: "Toàn công ty",
+    vanDe: "Tỷ lệ khách hàng quay lại thấp, chưa có chính sách ưu đãi rõ ràng",
+    moTa: "Thiết lập hệ thống điểm thưởng cho khách hàng mua nhiều lần, tích hợp với app mobile",
+    hieuQua: "Tăng 25% tỷ lệ khách hàng quay lại",
+    nguonLuc: "Ngân sách marketing, phát triển tính năng trên app",
+    giaTri: "Tăng doanh thu từ khách hàng cũ, xây dựng lòng trung thành thương hiệu",
+    link: "https://example.com/loyalty-program",
+    scoreN: "",
+    scoreO: "",
+    scoreP: "",
+    scoreQ: "",
+    goodJob: false,
+    baoVe: false,
+    feedback: "",
+  },
+];
+
+const mockAPI = {
+ verifyReviewer: async (reviewerId: string) => {
+    await new Promise(r => setTimeout(r, 500));
+    const trimmedId = reviewerId.trim().toUpperCase();
+
+    // Luôn dùng DEFAULT_REVIEWERS — không phụ thuộc localStorage
+    const reviewer = DEFAULT_REVIEWERS.find(r => r.reviewerId === trimmedId);
+    if (!reviewer) return { ok: false, error: "Mã không hợp lệ" };
+
+    const assigners = loadAssigners();
+    const isAssigner = assigners.some(a => a.reviewerId === trimmedId);
+    const assignments = loadAssignments();
+    const completed = loadCompletedIdeas();
+    const assignedIdeas = assignments.filter(a => a.assignedTo === trimmedId);
+
+    let pendingCount = 0;
+    if (assignments.length > 0) {
+      pendingCount = assignedIdeas.filter(a => !completed.includes(a.ideaKey)).length;
+    } else {
+      pendingCount = MOCK_IDEAS.filter(idea => {
+        const ideaKey = `${idea.sheetName}_${idea.rowIndex}`;
+        return !completed.includes(ideaKey);
+      }).length;
+    }
+
+    return { ok: true, ...reviewer, pendingCount, isAssigner };
+  },
+
+  getIdeas: async (reviewerId: string) => {
+    await new Promise(r => setTimeout(r, 600));
+    const assignments = loadAssignments();
+    const assigners = loadAssigners();
+    const completed = loadCompletedIdeas();
+
+    // Check if user is an assigner
+    const isAssigner = assigners.some(a => a.reviewerId === reviewerId);
+
+    // Filter ideas based on assignment
+    const assignedIdeas = assignments.filter(a => a.assignedTo === reviewerId);
+    let ideas = [...MOCK_IDEAS];
+
+    // Nếu có hệ thống phân công (có ít nhất 1 assignment trong hệ thống)
+    if (assignments.length > 0) {
+      // CHỈ hiển thị sáng kiến được phân công cho user này
+      ideas = ideas.filter(idea => {
+        const ideaKey = `${idea.sheetName}_${idea.rowIndex}`;
+        return assignedIdeas.some(a => a.ideaKey === ideaKey) && !completed.includes(ideaKey);
+      });
+    } else {
+      // Nếu chưa có phân công nào, hiển thị tất cả sáng kiến chưa hoàn thành
+      ideas = ideas.filter(idea => {
+        const ideaKey = `${idea.sheetName}_${idea.rowIndex}`;
+        return !completed.includes(ideaKey);
+      });
+    }
+
+    return { ok: true, ideas, isAssigner };
+  },
+
+  submitScore: async (data: any) => {
+    await new Promise(r => setTimeout(r, 500));
+    console.log("📊 Đã lưu điểm:", data);
+
+    // Đánh dấu sáng kiến đã hoàn thành
+    const ideaKey = `${data.sheetName}_${data.rowIndex}`;
+    markIdeaCompleted(ideaKey);
+
+    return { ok: true };
+  },
+
+  assignIdea: async (data: { ideaKey: string; assignedTo: string; assignedBy: string }) => {
+    await new Promise(r => setTimeout(r, 300));
+    const assignments = loadAssignments();
+    const newAssignment: Assignment = {
+      ...data,
+      assignedAt: new Date().toISOString(),
+    };
+    assignments.push(newAssignment);
+    saveAssignments(assignments);
+    console.log("📋 Đã phân công:", data);
+    return { ok: true };
+  },
+
+  getUnassignedIdeas: async () => {
+    await new Promise(r => setTimeout(r, 400));
+    const assignments = loadAssignments();
+    const completed = loadCompletedIdeas();
+    const assignedKeys = new Set(assignments.map(a => a.ideaKey));
+    const unassigned = MOCK_IDEAS.filter(idea => {
+      const ideaKey = `${idea.sheetName}_${idea.rowIndex}`;
+      // Chỉ hiển thị những sáng kiến chưa phân công VÀ chưa hoàn thành
+      return !assignedKeys.has(ideaKey) && !completed.includes(ideaKey);
+    });
+    return { ok: true, ideas: unassigned };
+  },
+};
+
 // ═══════════════════════════════════════════════════════════
 //  API HELPERS
 // ═══════════════════════════════════════════════════════════
@@ -157,7 +326,7 @@ const api = {
   get: async (params: Record<string, string>) => {
     if (USE_MOCK) {
       const { action, reviewerId } = params;
-      if (action === "verifyReviewer") return mockAPI.verifyReviewer(DEFAULT_REVIEWERS, reviewerId);
+      if (action === "verifyReviewer") return mockAPI.verifyReviewer(reviewerId);
       if (action === "getIdeas") return mockAPI.getIdeas(reviewerId);
       if (action === "getUnassignedIdeas") return mockAPI.getUnassignedIdeas();
       return { ok: false, error: "Unknown action" };
