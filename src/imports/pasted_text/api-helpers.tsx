@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-const API_URL = "https://script.google.com/macros/s/AKfycbyKgV7YOAqZumm6eZgYZClNCrGOkyAPweQMjSYORpZZnVL6iYaYNg87Cv_DVJZk0ps/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbx2tL0manVOnye65V98QVAoho3rT6rqh7wq5-X3RGiCbIN-wW3hwxvT3oIs61XfxG4/exec";
 const USE_MOCK = false;
 const ADMIN_PIN = "1234";
 
