@@ -818,7 +818,7 @@ export default function App() {
               {[["Vấn đề hiện tại", idea.vanDe], ["Mô tả ý tưởng", idea.moTa], ["Hiệu quả dự kiến", idea.hieuQua], ["Nguồn lực cần thiết", idea.nguonLuc], ["Giá trị mang lại", idea.giaTri]].map(([l, v]) => v ? (
                 <div key={l} style={S.fullField}><div style={S.metaLabel}>{l}</div><div style={{ ...S.metaValue, fontSize: 13, lineHeight: 1.7 }}>{v}</div></div>
               ) : null)}
-              {idea.link && <a href={idea.link} target="_blank" rel="noreferrer" style={{ display: "inline-block", marginTop: 4, fontSize: 12, color: "#0ea5e9", fontWeight: 700 }}>🔗 Xem tài liệu đính kèm</a>}
+               {/*idea.link && <a href={idea.link} target="_blank" rel="noreferrer" style={{ display: "inline-block", marginTop: 4, fontSize: 12, color: "#0ea5e9", fontWeight: 700 }}>🔗 Xem tài liệu đính kèm</a>*/}
             </div>
             <div style={S.card}>
               <div style={{ fontSize: 13, fontWeight: 800, letterSpacing: 1, color: "#64748b", textTransform: "uppercase", marginBottom: 20 }}>Chấm điểm</div>
