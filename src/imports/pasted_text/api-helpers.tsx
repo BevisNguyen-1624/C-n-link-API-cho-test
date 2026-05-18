@@ -157,7 +157,7 @@ const api = {
   get: async (params: Record<string, string>) => {
     if (USE_MOCK) {
       const { action, reviewerId } = params;
-      if (action === "verifyReviewer") return mockAPI.verifyReviewer(reviewerId);
+      if (action === "verifyReviewer") return mockAPI.verifyReviewer(DEFAULT_REVIEWERS, reviewerId);
       if (action === "getIdeas") return mockAPI.getIdeas(reviewerId);
       if (action === "getUnassignedIdeas") return mockAPI.getUnassignedIdeas();
       return { ok: false, error: "Unknown action" };
