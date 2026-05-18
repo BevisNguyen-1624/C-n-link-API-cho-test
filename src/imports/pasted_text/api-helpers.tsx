@@ -9,7 +9,7 @@ const LS_KEY_ASSIGNERS = "hoYoTa_assigners";
 const LS_KEY_ASSIGNMENTS = "hoYoTa_assignments";
 const LS_KEY_PROGRESS = "hoYoTa_progress";
 const LS_KEY_COMPLETED = "hoYoTa_completed";
-const PROGRESS_TRACKING_URL = "https://docs.google.com/spreadsheets/d/1oHkOgPVjNrvt8-YzDsp1dWOZqaNKdklh6BTFKx6nksI/";
+const PROGRESS_TRACKING_URL = "https://docs.google.com/spreadsheets/d/1oHkOgPVjNrvt8-YzDsp1dWOZqaNKdklh6BTFKx6nksI/edit?usp=sharing";
 
 // ═══ DANH SÁCH CỐ ĐỊNH — không phụ thuộc localStorage ═══
 const DEFAULT_REVIEWERS = [
