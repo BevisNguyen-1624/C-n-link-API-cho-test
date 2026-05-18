@@ -1,28 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 
-// ═══════════════════════════════════════════════════════════
-//  CONFIG — đổi URL sau khi deploy Apps Script Web App
-// ═══════════════════════════════════════════════════════════
-const API_URL = "https://script.google.com/macros/s/AKfycbyEgfc3ngc6-zeKeHlVeV7sJ7kEX_sD8_c4piX6PjUYnxS9qqpknrlAlkaiGey_a44/exec";
-const USE_MOCK = false; // Đổi thành false khi có API thật
-const ADMIN_PIN = "1234"; // Đổi PIN theo ý muốn
+const API_URL = "https://script.google.com/macros/s/AKfycbzZVZVgdRgb6MzFEKIiup8ZzDXfsCy3kT8d9iurqg/exec";
+const USE_MOCK = false;
+const ADMIN_PIN = "1234";
 
-// LƯU Ý KHI CHUYỂN SANG API THẬT:
-// Backend (Google Apps Script) cần implement logic phân công:
-// - Nếu có hệ thống phân công (assignments.length > 0): CHỈ trả về sáng kiến được assign cho user
-// - Nếu chưa có phân công: trả về tất cả sáng kiến
-// - User không được assign sáng kiến nào sẽ nhận danh sách rỗng
-
-// ═══════════════════════════════════════════════════════════
-//  REVIEWER LIST — lưu trong localStorage
-// ═══════════════════════════════════════════════════════════
 const LS_KEY = "hoYoTa_reviewers";
-const LS_KEY_ASSIGNERS = "hoYoTa_assigners"; // Danh sách người phân công
-const LS_KEY_ASSIGNMENTS = "hoYoTa_assignments"; // Phân công sáng kiến
-const LS_KEY_PROGRESS = "hoYoTa_progress"; // Tiến trình chấm
-const LS_KEY_COMPLETED = "hoYoTa_completed"; // Sáng kiến đã hoàn thành chấm
-const PROGRESS_TRACKING_URL = "https://drive.google.com/1oHkOgPVjNrvt8-YzDsp1dWOZqaNKdklh6BTFKx6nksI"; // URL theo dõi tiến độ
+const LS_KEY_ASSIGNERS = "hoYoTa_assigners";
+const LS_KEY_ASSIGNMENTS = "hoYoTa_assignments";
+const LS_KEY_PROGRESS = "hoYoTa_progress";
+const LS_KEY_COMPLETED = "hoYoTa_completed";
+const PROGRESS_TRACKING_URL = "https://drive.google.com/1oHkOgPVjNrvt8-YzDsp1dWOZqaNKdklh6BTFKx6nksI/edit?gid=1554582842#gid=1554582842";
 
+// ═══ DANH SÁCH CỐ ĐỊNH — không phụ thuộc localStorage ═══
 const DEFAULT_REVIEWERS = [
   { reviewerId: "YD0001",  name: "Nguyễn Việt Hòa" },
   { reviewerId: "FGG0001", name: "Nguyễn Kim Thanh" },
@@ -42,23 +31,25 @@ const DEFAULT_REVIEWERS = [
 interface Assigner {
   reviewerId: string;
   name: string;
-  assignees: string[]; // Danh sách mã YD của người được phân công
+  assignees: string[];
 }
 
 interface Assignment {
-  ideaKey: string; // sheetName + rowIndex để định danh sáng kiến
-  assignedTo: string; // Mã YD người được giao
-  assignedBy: string; // Mã YD người phân công
-  assignedAt: string; // Timestamp
+  ideaKey: string;
+  assignedTo: string;
+  assignedBy: string;
+  assignedAt: string;
 }
 
 interface Progress {
   reviewerId: string;
   currentIndex: number;
-  scores: Record<string, any>; // Lưu điểm đang chấm
+  scores: Record<string, any>;
   savedAt: string;
 }
 
+// localStorage chỉ dùng cho Admin thêm/xóa thành viên
+// Login luôn dùng DEFAULT_REVIEWERS
 function loadReviewers(): { reviewerId: string; name: string }[] {
   try {
     const raw = localStorage.getItem(LS_KEY);
@@ -143,13 +134,6 @@ function markIdeaCompleted(ideaKey: string) {
   } catch {}
 }
 
-// ═══════════════════════════════════════════════════════════
-//  MOCK API DATA (cho testing)
-// ═══════════════════════════════════════════════════════════
-// Lưu ý: Sáng kiến đã được phân công và chấm xong sẽ được lưu vào
-// localStorage (LS_KEY_COMPLETED) và sẽ KHÔNG xuất hiện lại trong
-// danh sách chấm hoặc danh sách phân công
-
 const MOCK_IDEAS = [
   {
     sheetName: "Phòng Kinh Doanh",
@@ -166,13 +150,8 @@ const MOCK_IDEAS = [
     nguonLuc: "1 developer, 2 tuần",
     giaTri: "Tăng hiệu suất team, dữ liệu chính xác hơn cho quyết định",
     link: "https://example.com/doc1",
-    scoreN: "",
-    scoreO: "",
-    scoreP: "",
-    scoreQ: "",
-    goodJob: false,
-    baoVe: false,
-    feedback: "",
+    scoreN: "", scoreO: "", scoreP: "", scoreQ: "",
+    goodJob: false, baoVe: false, feedback: "",
   },
   {
     sheetName: "Phòng Kỹ Thuật",
@@ -189,13 +168,8 @@ const MOCK_IDEAS = [
     nguonLuc: "App có sẵn, cần 1 tuần setup và training",
     giaTri: "Tăng năng suất sản xuất, giảm chi phí sửa chữa khẩn cấp",
     link: "",
-    scoreN: "",
-    scoreO: "",
-    scoreP: "",
-    scoreQ: "",
-    goodJob: false,
-    baoVe: false,
-    feedback: "",
+    scoreN: "", scoreO: "", scoreP: "", scoreQ: "",
+    goodJob: false, baoVe: false, feedback: "",
   },
   {
     sheetName: "Phòng Kinh Doanh",
@@ -212,22 +186,17 @@ const MOCK_IDEAS = [
     nguonLuc: "Ngân sách marketing, phát triển tính năng trên app",
     giaTri: "Tăng doanh thu từ khách hàng cũ, xây dựng lòng trung thành thương hiệu",
     link: "https://example.com/loyalty-program",
-    scoreN: "",
-    scoreO: "",
-    scoreP: "",
-    scoreQ: "",
-    goodJob: false,
-    baoVe: false,
-    feedback: "",
+    scoreN: "", scoreO: "", scoreP: "", scoreQ: "",
+    goodJob: false, baoVe: false, feedback: "",
   },
 ];
 
 const mockAPI = {
- verifyReviewer: async (reviewerId: string) => {
-    await new Promise(r => setTimeout(r, 500));
+  // ═══ FIX: luôn dùng DEFAULT_REVIEWERS, không dùng localStorage ═══
+  verifyReviewer: async (reviewerId: string) => {
+    await new Promise(r => setTimeout(r, 800));
     const trimmedId = reviewerId.trim().toUpperCase();
 
-    // Luôn dùng DEFAULT_REVIEWERS — không phụ thuộc localStorage
     const reviewer = DEFAULT_REVIEWERS.find(r => r.reviewerId === trimmedId);
     if (!reviewer) return { ok: false, error: "Mã không hợp lệ" };
 
@@ -255,23 +224,16 @@ const mockAPI = {
     const assignments = loadAssignments();
     const assigners = loadAssigners();
     const completed = loadCompletedIdeas();
-
-    // Check if user is an assigner
     const isAssigner = assigners.some(a => a.reviewerId === reviewerId);
-
-    // Filter ideas based on assignment
     const assignedIdeas = assignments.filter(a => a.assignedTo === reviewerId);
     let ideas = [...MOCK_IDEAS];
 
-    // Nếu có hệ thống phân công (có ít nhất 1 assignment trong hệ thống)
     if (assignments.length > 0) {
-      // CHỈ hiển thị sáng kiến được phân công cho user này
       ideas = ideas.filter(idea => {
         const ideaKey = `${idea.sheetName}_${idea.rowIndex}`;
         return assignedIdeas.some(a => a.ideaKey === ideaKey) && !completed.includes(ideaKey);
       });
     } else {
-      // Nếu chưa có phân công nào, hiển thị tất cả sáng kiến chưa hoàn thành
       ideas = ideas.filter(idea => {
         const ideaKey = `${idea.sheetName}_${idea.rowIndex}`;
         return !completed.includes(ideaKey);
@@ -284,24 +246,17 @@ const mockAPI = {
   submitScore: async (data: any) => {
     await new Promise(r => setTimeout(r, 500));
     console.log("📊 Đã lưu điểm:", data);
-
-    // Đánh dấu sáng kiến đã hoàn thành
     const ideaKey = `${data.sheetName}_${data.rowIndex}`;
     markIdeaCompleted(ideaKey);
-
     return { ok: true };
   },
 
   assignIdea: async (data: { ideaKey: string; assignedTo: string; assignedBy: string }) => {
     await new Promise(r => setTimeout(r, 300));
     const assignments = loadAssignments();
-    const newAssignment: Assignment = {
-      ...data,
-      assignedAt: new Date().toISOString(),
-    };
+    const newAssignment: Assignment = { ...data, assignedAt: new Date().toISOString() };
     assignments.push(newAssignment);
     saveAssignments(assignments);
-    console.log("📋 Đã phân công:", data);
     return { ok: true };
   },
 
@@ -312,16 +267,12 @@ const mockAPI = {
     const assignedKeys = new Set(assignments.map(a => a.ideaKey));
     const unassigned = MOCK_IDEAS.filter(idea => {
       const ideaKey = `${idea.sheetName}_${idea.rowIndex}`;
-      // Chỉ hiển thị những sáng kiến chưa phân công VÀ chưa hoàn thành
       return !assignedKeys.has(ideaKey) && !completed.includes(ideaKey);
     });
     return { ok: true, ideas: unassigned };
   },
 };
 
-// ═══════════════════════════════════════════════════════════
-//  API HELPERS
-// ═══════════════════════════════════════════════════════════
 const api = {
   get: async (params: Record<string, string>) => {
     if (USE_MOCK) {
@@ -333,7 +284,6 @@ const api = {
     }
     return fetch(`${API_URL}?${new URLSearchParams(params)}`).then((r) => r.json());
   },
-
   post: async (body: any) => {
     if (USE_MOCK) {
       const { action } = body;
@@ -345,9 +295,6 @@ const api = {
   },
 };
 
-// ═══════════════════════════════════════════════════════════
-//  SCORING CRITERIA
-// ═══════════════════════════════════════════════════════════
 const CRITERIA = [
   {
     key: "scoreN",
@@ -398,9 +345,6 @@ const CRITERIA = [
 
 const GOODJOB_THRESHOLD = 7;
 
-// ═══════════════════════════════════════════════════════════
-//  STYLES — Sky / Cheerful theme
-// ═══════════════════════════════════════════════════════════
 const S: Record<string, any> = {
   page: {
     minHeight: "100vh",
@@ -448,215 +392,95 @@ const S: Record<string, any> = {
     marginBottom: 20,
     boxShadow: "0 4px 24px rgba(14,165,233,0.08)",
   },
-  h1: {
-    fontSize: 26,
-    fontWeight: 800,
-    margin: "0 0 6px",
-    letterSpacing: -0.5,
-    color: "#0f172a",
-  },
+  h1: { fontSize: 26, fontWeight: 800, margin: "0 0 6px", letterSpacing: -0.5, color: "#0f172a" },
   sub: { fontSize: 13, color: "#64748b", margin: "0 0 28px" },
   label: {
-    display: "block",
-    fontSize: 11,
-    fontWeight: 700,
-    letterSpacing: 2,
-    textTransform: "uppercase" as const,
-    color: "#64748b",
-    marginBottom: 8,
+    display: "block", fontSize: 11, fontWeight: 700, letterSpacing: 2,
+    textTransform: "uppercase" as const, color: "#64748b", marginBottom: 8,
   },
   input: {
-    width: "100%",
-    background: "#f0f9ff",
-    border: "1.5px solid #bae6fd",
-    borderRadius: 10,
-    padding: "14px 18px",
-    fontSize: 16,
-    fontWeight: 700,
-    color: "#0f172a",
-    outline: "none",
-    letterSpacing: 2,
-    textTransform: "uppercase" as const,
-    boxSizing: "border-box" as const,
-    transition: "border-color .2s",
+    width: "100%", background: "#f0f9ff", border: "1.5px solid #bae6fd",
+    borderRadius: 10, padding: "14px 18px", fontSize: 16, fontWeight: 700,
+    color: "#0f172a", outline: "none", letterSpacing: 2,
+    textTransform: "uppercase" as const, boxSizing: "border-box" as const, transition: "border-color .2s",
   },
   namePreview: {
-    marginTop: 14,
-    padding: "12px 18px",
-    background: "#f0fdf4",
-    border: "1px solid #bbf7d0",
-    borderRadius: 10,
-    fontSize: 14,
-    color: "#16a34a",
-    fontWeight: 600,
-    display: "flex",
-    alignItems: "center",
-    gap: 8,
+    marginTop: 14, padding: "12px 18px", background: "#f0fdf4",
+    border: "1px solid #bbf7d0", borderRadius: 10, fontSize: 14,
+    color: "#16a34a", fontWeight: 600, display: "flex", alignItems: "center", gap: 8,
   },
   btnPrimary: {
-    width: "100%",
-    marginTop: 22,
-    padding: "15px",
+    width: "100%", marginTop: 22, padding: "15px",
     background: "linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%)",
-    border: "none",
-    borderRadius: 10,
-    fontSize: 15,
-    fontWeight: 800,
-    color: "#fff",
-    cursor: "pointer",
-    letterSpacing: 1,
+    border: "none", borderRadius: 10, fontSize: 15, fontWeight: 800,
+    color: "#fff", cursor: "pointer", letterSpacing: 1,
     transition: "opacity .15s, transform .1s",
     boxShadow: "0 4px 14px rgba(14,165,233,0.35)",
   },
   btnSecondary: {
-    padding: "10px 22px",
-    background: "transparent",
-    border: "1.5px solid #bae6fd",
-    borderRadius: 8,
-    fontSize: 13,
-    fontWeight: 700,
-    color: "#0369a1",
-    cursor: "pointer",
-    transition: "border-color .2s, color .2s",
+    padding: "10px 22px", background: "transparent", border: "1.5px solid #bae6fd",
+    borderRadius: 8, fontSize: 13, fontWeight: 700, color: "#0369a1",
+    cursor: "pointer", transition: "border-color .2s, color .2s",
   },
   error: {
-    marginTop: 12,
-    padding: "10px 16px",
-    background: "#fef2f2",
-    border: "1px solid #fecaca",
-    borderRadius: 8,
-    fontSize: 13,
-    color: "#ef4444",
+    marginTop: 12, padding: "10px 16px", background: "#fef2f2",
+    border: "1px solid #fecaca", borderRadius: 8, fontSize: 13, color: "#ef4444",
   },
-  ideaMeta: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: "10px 20px",
-    marginBottom: 20,
-  },
-  metaItem: {
-    background: "#f0f9ff",
-    border: "1px solid #bae6fd",
-    borderRadius: 8,
-    padding: "10px 14px",
-  },
+  ideaMeta: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 20px", marginBottom: 20 },
+  metaItem: { background: "#f0f9ff", border: "1px solid #bae6fd", borderRadius: 8, padding: "10px 14px" },
   metaLabel: { fontSize: 10, letterSpacing: 2, color: "#64748b", textTransform: "uppercase" as const, marginBottom: 4 },
   metaValue: { fontSize: 13, color: "#0f172a", fontWeight: 600, lineHeight: 1.5 },
-  fullField: {
-    background: "#f0f9ff",
-    border: "1px solid #e0f2fe",
-    borderRadius: 8,
-    padding: "12px 16px",
-    marginBottom: 10,
-  },
-  criteriaBlock: {
-    marginBottom: 18,
-  },
-  criteriaHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "baseline",
-    marginBottom: 6,
-  },
+  fullField: { background: "#f0f9ff", border: "1px solid #e0f2fe", borderRadius: 8, padding: "12px 16px", marginBottom: 10 },
+  criteriaBlock: { marginBottom: 18 },
+  criteriaHeader: { display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 },
   criteriaLabel: { fontWeight: 800, fontSize: 14, color: "#0f172a" },
   criteriaDesc: { fontSize: 11, color: "#64748b", marginBottom: 10 },
-  optionRow: {
-    display: "flex",
-    gap: 8,
-    width: "100%",
-  },
+  optionRow: { display: "flex", gap: 8, width: "100%" },
   optionBtn: (selected: boolean) => ({
-    flex: 1,
-    padding: "10px 8px",
-    borderRadius: 8,
+    flex: 1, padding: "10px 8px", borderRadius: 8,
     border: selected ? "2px solid #0ea5e9" : "1.5px solid #bae6fd",
     background: selected ? "#e0f2fe" : "#f8fafc",
     color: selected ? "#0284c7" : "#64748b",
-    fontSize: 12,
-    fontWeight: selected ? 800 : 700,
-    cursor: "pointer",
-    transition: "all .15s",
-    textAlign: "center" as const,
+    fontSize: 12, fontWeight: selected ? 800 : 700, cursor: "pointer",
+    transition: "all .15s", textAlign: "center" as const,
     boxShadow: selected ? "0 0 0 1px #0ea5e9 inset, 0 2px 12px rgba(14,165,233,0.18)" : "none",
-    lineHeight: 1.4,
-    fontFamily: "'Nunito', sans-serif",
+    lineHeight: 1.4, fontFamily: "'Nunito', sans-serif",
   }),
   scoreTotal: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
+    display: "flex", alignItems: "center", justifyContent: "space-between",
     padding: "16px 20px",
     background: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
-    border: "1.5px solid #bae6fd",
-    borderRadius: 10,
-    marginBottom: 20,
-    marginTop: 4,
+    border: "1.5px solid #bae6fd", borderRadius: 10, marginBottom: 20, marginTop: 4,
   },
   scoreBig: (val: number) => ({
-    fontSize: 32,
-    fontWeight: 900,
+    fontSize: 32, fontWeight: 900,
     color: val >= GOODJOB_THRESHOLD ? "#16a34a" : val >= 3 ? "#d97706" : "#ef4444",
   }),
-  checkboxRow: {
-    display: "flex",
-    gap: 12,
-    marginBottom: 24,
-  },
+  checkboxRow: { display: "flex", gap: 12, marginBottom: 24 },
   checkCard: (active: boolean, color: string) => ({
-    flex: 1,
-    padding: "14px 18px",
-    borderRadius: 10,
+    flex: 1, padding: "14px 18px", borderRadius: 10,
     border: active ? `2px solid ${color}` : "1.5px solid #bae6fd",
     background: active ? (color === "#16a34a" ? "#f0fdf4" : "#eff6ff") : "#f8fafc",
-    cursor: "pointer",
-    transition: "all .2s",
-    textAlign: "center" as const,
+    cursor: "pointer", transition: "all .2s", textAlign: "center" as const,
     boxShadow: active ? `0 4px 14px ${color}30` : "none",
   }),
-  progress: {
-    width: "100%",
-    maxWidth: 800,
-    marginBottom: 20,
-  },
-  progressBar: {
-    height: 4,
-    background: "#bae6fd",
-    borderRadius: 99,
-    overflow: "hidden",
-    marginTop: 8,
-  },
+  progress: { width: "100%", maxWidth: 800, marginBottom: 20 },
+  progressBar: { height: 4, background: "#bae6fd", borderRadius: 99, overflow: "hidden", marginTop: 8 },
   progressFill: (pct: number) => ({
-    height: "100%",
-    width: `${pct}%`,
+    height: "100%", width: `${pct}%`,
     background: "linear-gradient(90deg, #38bdf8, #818cf8)",
-    borderRadius: 99,
-    transition: "width .4s ease",
+    borderRadius: 99, transition: "width .4s ease",
   }),
-  done: {
-    textAlign: "center" as const,
-    padding: "60px 40px",
-  },
+  done: { textAlign: "center" as const, padding: "60px 40px" },
   feedbackBox: {
-    width: "100%",
-    background: "#f0f9ff",
-    border: "1.5px solid #bae6fd",
-    borderRadius: 10,
-    padding: "14px 16px",
-    fontSize: 13,
-    color: "#0f172a",
-    fontFamily: "'Nunito', sans-serif",
-    lineHeight: 1.7,
-    resize: "vertical" as const,
-    minHeight: 100,
-    outline: "none",
-    boxSizing: "border-box" as const,
-    transition: "border-color .2s",
+    width: "100%", background: "#f0f9ff", border: "1.5px solid #bae6fd",
+    borderRadius: 10, padding: "14px 16px", fontSize: 13, color: "#0f172a",
+    fontFamily: "'Nunito', sans-serif", lineHeight: 1.7,
+    resize: "vertical" as const, minHeight: 100, outline: "none",
+    boxSizing: "border-box" as const, transition: "border-color .2s",
   },
 };
 
-// ═══════════════════════════════════════════════════════════
-//  MAIN APP
-// ═══════════════════════════════════════════════════════════
 export default function App() {
   const [step, setStep]             = useState("login");
   const [reviewerId, setReviewerId] = useState("");
@@ -674,26 +498,23 @@ export default function App() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isAssigner, setIsAssigner] = useState(false);
 
-  // ── ASSIGNMENT STATE ───────────────────────────────────────
   const [unassignedIdeas, setUnassignedIdeas] = useState<any[]>([]);
   const [myAssignees, setMyAssignees] = useState<string[]>([]);
   const [selectedIdeas, setSelectedIdeas] = useState<any[]>([]);
   const [selectedAssignee, setSelectedAssignee] = useState("");
   const [assignmentStats, setAssignmentStats] = useState<Record<string, number>>({});
 
-  // ── ADMIN STATE ────────────────────────────────────────────
-  const [adminPin, setAdminPin]         = useState("");
+  const [adminPin, setAdminPin]           = useState("");
   const [adminUnlocked, setAdminUnlocked] = useState(false);
-  const [newYD, setNewYD]               = useState("");
-  const [newName, setNewName]           = useState("");
-  const [adminError, setAdminError]     = useState("");
-  const [reviewerList, setReviewerList] = useState<{ reviewerId: string; name: string }[]>(() => loadReviewers());
-  const [assignerList, setAssignerList] = useState<Assigner[]>(() => loadAssigners());
-  const [adminTab, setAdminTab]         = useState<"reviewers" | "assigners">("reviewers");
+  const [newYD, setNewYD]                 = useState("");
+  const [newName, setNewName]             = useState("");
+  const [adminError, setAdminError]       = useState("");
+  const [reviewerList, setReviewerList]   = useState<{ reviewerId: string; name: string }[]>(() => loadReviewers());
+  const [assignerList, setAssignerList]   = useState<Assigner[]>(() => loadAssigners());
+  const [adminTab, setAdminTab]           = useState<"reviewers" | "assigners">("reviewers");
   const [newAssignerYD, setNewAssignerYD] = useState("");
   const [selectedAdminAssignees, setSelectedAdminAssignees] = useState<string[]>([]);
 
-  // Load điểm từ idea hoặc từ progress đã lưu
   useEffect(() => {
     if (!ideas[current]) return;
     const idea = ideas[current];
@@ -708,22 +529,14 @@ export default function App() {
     setFeedback(idea.feedback || "");
   }, [current, ideas]);
 
-  // Auto-save progress khi scores thay đổi
   useEffect(() => {
     if (!reviewer || step !== "scoring" || !ideas[current]) return;
-    // Chỉ lưu khi đã có ít nhất 1 điểm được chấm
     const hasScores = Object.values(scores).some(s => s !== null && s !== undefined);
     if (!hasScores) return;
-
     const progress: Progress = {
       reviewerId: reviewer.reviewerId,
       currentIndex: current,
-      scores: {
-        ...scores,
-        goodJob,
-        baoVe,
-        feedback,
-      },
+      scores: { ...scores, goodJob, baoVe, feedback },
       savedAt: new Date().toISOString(),
     };
     saveProgress(progress);
@@ -736,7 +549,6 @@ export default function App() {
     if (allScored) setGoodJob(totalScore >= GOODJOB_THRESHOLD);
   }, [totalScore, allScored]);
 
-  // ── LOGIN ──────────────────────────────────────────────────
   const handleVerify = async () => {
     if (!reviewerId.trim()) return;
     setLoading(true);
@@ -764,16 +576,12 @@ export default function App() {
         setReviewer(preview);
         setIdeas(res.ideas);
         setIsAssigner(res.isAssigner || false);
-
-        // Load lại progress nếu có
         const savedProgress = loadProgress(preview.reviewerId);
         if (savedProgress && res.ideas.length > 0) {
           setCurrent(Math.min(savedProgress.currentIndex, res.ideas.length - 1));
-          // Điểm sẽ được load từ useEffect
         } else {
           setCurrent(0);
         }
-
         setStep(res.ideas.length === 0 ? "done" : "scoring");
       } else {
         setError(res.error || "Không lấy được dữ liệu");
@@ -784,7 +592,6 @@ export default function App() {
     setLoading(false);
   };
 
-  // ── ADMIN ──────────────────────────────────────────────────
   const handleAdminUnlock = () => {
     if (adminPin === ADMIN_PIN) { setAdminUnlocked(true); setAdminError(""); }
     else setAdminError("Mã PIN không đúng");
@@ -797,9 +604,7 @@ export default function App() {
     const updated = [...reviewerList, { reviewerId: yd, name: newName.trim() }];
     setReviewerList(updated);
     saveReviewers(updated);
-    setNewYD("");
-    setNewName("");
-    setAdminError("");
+    setNewYD(""); setNewName(""); setAdminError("");
   };
 
   const handleDeleteReviewer = (ydCode: string) => {
@@ -813,16 +618,12 @@ export default function App() {
     if (!yd) { setAdminError("Vui lòng chọn Mã YD."); return; }
     if (selectedAdminAssignees.length === 0) { setAdminError("Vui lòng chọn ít nhất 1 người được phân công."); return; }
     if (assignerList.some(a => a.reviewerId === yd)) { setAdminError("Người này đã là người phân công."); return; }
-
-    const reviewer = reviewerList.find(r => r.reviewerId === yd);
-    if (!reviewer) { setAdminError("Mã YD không tồn tại trong danh sách thành viên."); return; }
-
-    const updated = [...assignerList, { reviewerId: yd, name: reviewer.name, assignees: selectedAdminAssignees }];
+    const rev = reviewerList.find(r => r.reviewerId === yd);
+    if (!rev) { setAdminError("Mã YD không tồn tại trong danh sách thành viên."); return; }
+    const updated = [...assignerList, { reviewerId: yd, name: rev.name, assignees: selectedAdminAssignees }];
     setAssignerList(updated);
     saveAssigners(updated);
-    setNewAssignerYD("");
-    setSelectedAdminAssignees([]);
-    setAdminError("");
+    setNewAssignerYD(""); setSelectedAdminAssignees([]); setAdminError("");
   };
 
   const handleDeleteAssigner = (ydCode: string) => {
@@ -840,21 +641,13 @@ export default function App() {
   };
 
   const exitAdmin = () => {
-    setStep("login");
-    setAdminPin("");
-    setAdminUnlocked(false);
-    setAdminError("");
-    setNewYD("");
-    setNewName("");
-    setAdminTab("reviewers");
-    setNewAssignerYD("");
-    setSelectedAdminAssignees([]);
+    setStep("login"); setAdminPin(""); setAdminUnlocked(false); setAdminError("");
+    setNewYD(""); setNewName(""); setAdminTab("reviewers");
+    setNewAssignerYD(""); setSelectedAdminAssignees([]);
   };
 
-  // ── ASSIGNMENT HANDLERS ────────────────────────────────────
   const handleGoToAssign = async () => {
-    setLoading(true);
-    setError("");
+    setLoading(true); setError("");
     try {
       const res = await api.get({ action: "getUnassignedIdeas" });
       if (res.ok) {
@@ -862,197 +655,115 @@ export default function App() {
         const assigners = loadAssigners();
         const assigner = assigners.find(a => a.reviewerId === preview.reviewerId);
         setMyAssignees(assigner?.assignees || []);
-        setReviewer(preview); // Set reviewer để dùng khi phân công
-
-        // Tính thống kê số sáng kiến đã phân công cho mỗi người
+        setReviewer(preview);
         const assignments = loadAssignments();
         const completed = loadCompletedIdeas();
         const stats: Record<string, number> = {};
         (assigner?.assignees || []).forEach(assigneeId => {
-          // Đếm số sáng kiến đã phân công và chưa hoàn thành
-          const count = assignments.filter(a =>
-            a.assignedTo === assigneeId &&
-            a.assignedBy === preview.reviewerId &&
-            !completed.includes(a.ideaKey)
+          stats[assigneeId] = assignments.filter(a =>
+            a.assignedTo === assigneeId && a.assignedBy === preview.reviewerId && !completed.includes(a.ideaKey)
           ).length;
-          stats[assigneeId] = count;
         });
         setAssignmentStats(stats);
-
         setStep("assign");
-      } else {
-        setError("Không lấy được danh sách sáng kiến");
-      }
-    } catch {
-      setError("Lỗi kết nối");
-    }
+      } else { setError("Không lấy được danh sách sáng kiến"); }
+    } catch { setError("Lỗi kết nối"); }
     setLoading(false);
   };
 
   const handleAssignIdea = async () => {
     if (selectedIdeas.length === 0 || !selectedAssignee) {
-      setError("Vui lòng chọn ít nhất 1 sáng kiến và 1 người được phân công");
-      return;
+      setError("Vui lòng chọn ít nhất 1 sáng kiến và 1 người được phân công"); return;
     }
-    setLoading(true);
-    setError("");
+    setLoading(true); setError("");
     try {
-      // Phân công từng sáng kiến cho người được chọn
       for (const idea of selectedIdeas) {
         const ideaKey = `${idea.sheetName}_${idea.rowIndex}`;
-        await api.post({
-          action: "assignIdea",
-          ideaKey,
-          assignedTo: selectedAssignee,
-          assignedBy: reviewer.reviewerId,
-        });
+        await api.post({ action: "assignIdea", ideaKey, assignedTo: selectedAssignee, assignedBy: reviewer.reviewerId });
       }
-
-      // Cập nhật danh sách sáng kiến chưa phân công
       setUnassignedIdeas(unassignedIdeas.filter(i => !selectedIdeas.includes(i)));
-
-      // Cập nhật thống kê
-      setAssignmentStats(prev => ({
-        ...prev,
-        [selectedAssignee]: (prev[selectedAssignee] || 0) + selectedIdeas.length
-      }));
-
-      setSelectedIdeas([]);
-      setSelectedAssignee("");
-    } catch {
-      setError("Lỗi kết nối");
-    }
+      setAssignmentStats(prev => ({ ...prev, [selectedAssignee]: (prev[selectedAssignee] || 0) + selectedIdeas.length }));
+      setSelectedIdeas([]); setSelectedAssignee("");
+    } catch { setError("Lỗi kết nối"); }
     setLoading(false);
   };
 
   const toggleIdeaSelection = (idea: any) => {
-    if (selectedIdeas.includes(idea)) {
-      setSelectedIdeas(selectedIdeas.filter(i => i !== idea));
-    } else {
-      setSelectedIdeas([...selectedIdeas, idea]);
-    }
+    if (selectedIdeas.includes(idea)) setSelectedIdeas(selectedIdeas.filter(i => i !== idea));
+    else setSelectedIdeas([...selectedIdeas, idea]);
   };
 
-  // ── SCORING ────────────────────────────────────────────────
   const pct = ideas.length ? Math.round((current / ideas.length) * 100) : 0;
 
   const handleSubmitScore = async () => {
     if (!allScored) { setError("Vui lòng chấm đủ 4 tiêu chí."); return; }
-    setSubmitting(true);
-    setError("");
+    setSubmitting(true); setError("");
     const idea = ideas[current];
     try {
-      // Sync ngay khi lưu (không đợi đến cuối)
       const res = await api.post({
         action: "submitScore",
-        sheetName:    idea.sheetName,
-        rowIndex:     idea.rowIndex,
-        scoreN:       scores.scoreN,
-        scoreO:       scores.scoreO,
-        scoreP:       scores.scoreP,
-        scoreQ:       scores.scoreQ,
-        goodJob,
-        baoVe,
-        feedback,
-        reviewerName: reviewer.name,
+        sheetName: idea.sheetName, rowIndex: idea.rowIndex,
+        scoreN: scores.scoreN, scoreO: scores.scoreO, scoreP: scores.scoreP, scoreQ: scores.scoreQ,
+        goodJob, baoVe, feedback, reviewerName: reviewer.name,
       });
       if (res.ok) {
-        if (current + 1 >= ideas.length) {
-          // Hoàn tất tất cả, clear progress
-          clearProgress(reviewer.reviewerId);
-          setStep("done");
-        } else {
-          // Chuyển sang sáng kiến tiếp theo
-          setCurrent((c) => c + 1);
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }
-      } else {
-        setError(res.error || "Lỗi khi lưu điểm.");
-      }
-    } catch {
-      setError("Lỗi kết nối khi lưu.");
-    }
+        if (current + 1 >= ideas.length) { clearProgress(reviewer.reviewerId); setStep("done"); }
+        else { setCurrent((c) => c + 1); window.scrollTo({ top: 0, behavior: "smooth" }); }
+      } else { setError(res.error || "Lỗi khi lưu điểm."); }
+    } catch { setError("Lỗi kết nối khi lưu."); }
     setSubmitting(false);
   };
 
-  // ── RENDER ─────────────────────────────────────────────────
   return (
     <div style={S.page}>
-
-      {/* TOP BAR */}
       <div style={S.topBar}>
         <span style={S.logo}>Chấm sáng kiến Hò Yo Ta</span>
         {reviewer ? (
           <span style={S.badge}>{reviewer.name} · {reviewer.reviewerId}</span>
         ) : step === "login" ? (
-          <button
-            title="Quản lý danh sách Mã YD"
-            onClick={() => setStep("admin")}
-            style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: "#94a3b8", padding: 4, lineHeight: 1 }}
-          >⚙️</button>
+          <button title="Quản lý danh sách Mã YD" onClick={() => setStep("admin")}
+            style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: "#94a3b8", padding: 4, lineHeight: 1 }}>⚙️</button>
         ) : null}
       </div>
 
-      {/* ══ STEP: LOGIN ══ */}
+      {/* ══ LOGIN ══ */}
       {step === "login" && (
         <div style={{ ...S.card, maxWidth: 480 }}>
           <h1 style={{ ...S.h1, textAlign: "center" }}>Chào mừng ☀️</h1>
           <p style={S.sub}>Nhập mã YD để bắt đầu chấm điểm sáng kiến</p>
-
           <label style={S.label}>Mã YD</label>
-          <input
-            ref={inputRef}
-            style={S.input}
-            placeholder="Mã YD của anh/chị"
+          <input ref={inputRef} style={S.input} placeholder="Mã YD của anh/chị"
             value={reviewerId}
             onChange={(e) => { setReviewerId(e.target.value); setPreview(null); setError(""); }}
             onKeyDown={(e) => e.key === "Enter" && handleVerify()}
             onFocus={(e) => (e.target.style.borderColor = "#38bdf8")}
             onBlur={(e) => (e.target.style.borderColor = "#bae6fd")}
-            maxLength={10}
-          />
-
+            maxLength={10} />
           {preview && (
             <div style={S.namePreview}>
-              <span>✓</span>
-              <span>{preview.name}</span>
+              <span>✓</span><span>{preview.name}</span>
               <span style={{ marginLeft: "auto", color: "#6ee7b7", fontSize: 11 }}>
-                {preview.pendingCount > 0
-                  ? `${preview.pendingCount} sáng kiến chưa chấm`
-                  : "Đã hoàn tất chấm sáng kiến"}
+                {preview.pendingCount > 0 ? `${preview.pendingCount} sáng kiến chưa chấm` : "Đã hoàn tất chấm sáng kiến"}
               </span>
             </div>
           )}
-
           {error && <div style={S.error}>{error}</div>}
-
           {!preview ? (
-            <button
-              style={S.btnPrimary}
-              onClick={handleVerify}
-              disabled={loading || !reviewerId.trim()}
+            <button style={S.btnPrimary} onClick={handleVerify} disabled={loading || !reviewerId.trim()}
               onMouseOver={(e) => ((e.target as HTMLButtonElement).style.opacity = "0.85")}
-              onMouseOut={(e) => ((e.target as HTMLButtonElement).style.opacity = "1")}
-            >
+              onMouseOut={(e) => ((e.target as HTMLButtonElement).style.opacity = "1")}>
               {loading ? "Đang xác nhận..." : "Xác nhận mã →"}
             </button>
           ) : (
             <>
-              <button
-                style={S.btnPrimary}
-                onClick={handleStart}
-                disabled={loading}
+              <button style={S.btnPrimary} onClick={handleStart} disabled={loading}
                 onMouseOver={(e) => ((e.target as HTMLButtonElement).style.opacity = "0.85")}
-                onMouseOut={(e) => ((e.target as HTMLButtonElement).style.opacity = "1")}
-              >
+                onMouseOut={(e) => ((e.target as HTMLButtonElement).style.opacity = "1")}>
                 {loading ? "Đang tải..." : "Bắt đầu chấm điểm →"}
               </button>
               {preview.isAssigner && (
-                <button
-                  style={{ ...S.btnSecondary, width: "100%", marginTop: 12, padding: "12px" }}
-                  onClick={handleGoToAssign}
-                  disabled={loading}
-                >
+                <button style={{ ...S.btnSecondary, width: "100%", marginTop: 12, padding: "12px" }}
+                  onClick={handleGoToAssign} disabled={loading}>
                   📋 Phân công sáng kiến
                 </button>
               )}
@@ -1061,82 +772,42 @@ export default function App() {
         </div>
       )}
 
-      {/* ══ STEP: SCORING ══ */}
+      {/* ══ SCORING ══ */}
       {step === "scoring" && ideas[current] && (() => {
         const idea = ideas[current];
         return (
           <>
-            {/* Progress */}
             <div style={S.progress}>
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#64748b", fontWeight: 700 }}>
                 <span>SÁNG KIẾN {current + 1} / {ideas.length}</span>
                 <span>{pct}% hoàn thành</span>
               </div>
-              <div style={S.progressBar}>
-                <div style={S.progressFill(pct)} />
-              </div>
+              <div style={S.progressBar}><div style={S.progressFill(pct)} /></div>
             </div>
-
-            {/* Idea info */}
             <div style={S.card}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
                 <div>
-                  <div style={{ fontSize: 11, letterSpacing: 2, color: "#64748b", textTransform: "uppercase", marginBottom: 6 }}>
-                    {idea.sheetName}
-                  </div>
-                  <h2 style={{ margin: 0, fontSize: 20, fontWeight: 900, lineHeight: 1.3, color: "#0f172a" }}>
-                    {idea.tenYT || "(Chưa có tên)"}
-                  </h2>
+                  <div style={{ fontSize: 11, letterSpacing: 2, color: "#64748b", textTransform: "uppercase", marginBottom: 6 }}>{idea.sheetName}</div>
+                  <h2 style={{ margin: 0, fontSize: 20, fontWeight: 900, lineHeight: 1.3, color: "#0f172a" }}>{idea.tenYT || "(Chưa có tên)"}</h2>
                 </div>
                 <div style={{ textAlign: "right" }}>
                   <div style={{ fontSize: 10, color: "#64748b", marginBottom: 4, letterSpacing: 2, textTransform: "uppercase" }}>Mã NV</div>
                   <div style={{ fontWeight: 800, fontSize: 15, color: "#0369a1" }}>{idea.maNV}</div>
                 </div>
               </div>
-
               <div style={{ height: 1, background: "#bae6fd", margin: "16px 0" }} />
-
               <div style={S.ideaMeta}>
-                {[
-                  ["Level ý tưởng", idea.level],
-                  ["Thử nghiệm chưa", idea.thuNghiem],
-                  ["Phòng ban liên quan", idea.pbLienQuan],
-                  ["Vùng/Phòng ban", idea.vungPB],
-                ].map(([l, v]) => (
-                  <div key={l} style={S.metaItem}>
-                    <div style={S.metaLabel}>{l}</div>
-                    <div style={S.metaValue}>{v || "—"}</div>
-                  </div>
+                {[["Level ý tưởng", idea.level], ["Thử nghiệm chưa", idea.thuNghiem], ["Phòng ban liên quan", idea.pbLienQuan], ["Vùng/Phòng ban", idea.vungPB]].map(([l, v]) => (
+                  <div key={l} style={S.metaItem}><div style={S.metaLabel}>{l}</div><div style={S.metaValue}>{v || "—"}</div></div>
                 ))}
               </div>
-
-              {[
-                ["Vấn đề hiện tại", idea.vanDe],
-                ["Mô tả ý tưởng", idea.moTa],
-                ["Hiệu quả dự kiến", idea.hieuQua],
-                ["Nguồn lực cần thiết", idea.nguonLuc],
-                ["Giá trị mang lại", idea.giaTri],
-              ].map(([l, v]) => v ? (
-                <div key={l} style={S.fullField}>
-                  <div style={S.metaLabel}>{l}</div>
-                  <div style={{ ...S.metaValue, fontSize: 13, lineHeight: 1.7 }}>{v}</div>
-                </div>
+              {[["Vấn đề hiện tại", idea.vanDe], ["Mô tả ý tưởng", idea.moTa], ["Hiệu quả dự kiến", idea.hieuQua], ["Nguồn lực cần thiết", idea.nguonLuc], ["Giá trị mang lại", idea.giaTri]].map(([l, v]) => v ? (
+                <div key={l} style={S.fullField}><div style={S.metaLabel}>{l}</div><div style={{ ...S.metaValue, fontSize: 13, lineHeight: 1.7 }}>{v}</div></div>
               ) : null)}
-
-              {idea.link && (
-                <a href={idea.link} target="_blank" rel="noreferrer"
-                  style={{ display: "inline-block", marginTop: 4, fontSize: 12, color: "#0ea5e9", fontWeight: 700 }}>
-                  🔗 Xem tài liệu đính kèm
-                </a>
-              )}
+              {idea.link && <a href={idea.link} target="_blank" rel="noreferrer" style={{ display: "inline-block", marginTop: 4, fontSize: 12, color: "#0ea5e9", fontWeight: 700 }}>🔗 Xem tài liệu đính kèm</a>}
             </div>
-
-            {/* Scoring */}
             <div style={S.card}>
-              <div style={{ fontSize: 13, fontWeight: 800, letterSpacing: 1, color: "#64748b", textTransform: "uppercase", marginBottom: 20 }}>
-                Chấm điểm
-              </div>
-
+              <div style={{ fontSize: 13, fontWeight: 800, letterSpacing: 1, color: "#64748b", textTransform: "uppercase", marginBottom: 20 }}>Chấm điểm</div>
               {CRITERIA.map((c) => (
                 <div key={c.key} style={S.criteriaBlock}>
                   <div style={S.criteriaHeader}>
@@ -1144,39 +815,22 @@ export default function App() {
                     <span style={{ fontSize: 11, color: "#64748b" }}>tối đa {c.max} điểm</span>
                   </div>
                   <div style={S.criteriaDesc}>{c.desc}</div>
-
                   <div style={S.optionRow}>
                     {c.options.map((opt) => (
-                      <button
-                        key={opt.val}
-                        style={S.optionBtn(scores[c.key] === opt.val)}
-                        onClick={() => setScores((s) => ({ ...s, [c.key]: opt.val }))}
-                      >
-                        {opt.label}
-                      </button>
+                      <button key={opt.val} style={S.optionBtn(scores[c.key] === opt.val)} onClick={() => setScores((s) => ({ ...s, [c.key]: opt.val }))}>{opt.label}</button>
                     ))}
                   </div>
                   {c.key !== "scoreQ" && <div style={{ height: 1, background: "#e0f2fe", margin: "16px 0" }} />}
                 </div>
               ))}
-
-              {/* Total */}
               <div style={S.scoreTotal}>
                 <div>
                   <div style={{ fontSize: 11, letterSpacing: 2, color: "#64748b", textTransform: "uppercase" }}>Tổng điểm</div>
-                  {allScored && totalScore >= GOODJOB_THRESHOLD && (
-                    <div style={{ fontSize: 11, color: "#16a34a", marginTop: 2, fontWeight: 700 }}>
-                      ✓ Đủ điều kiện GOOD JOB
-                    </div>
-                  )}
+                  {allScored && totalScore >= GOODJOB_THRESHOLD && <div style={{ fontSize: 11, color: "#16a34a", marginTop: 2, fontWeight: 700 }}>✓ Đủ điều kiện GOOD JOB</div>}
                 </div>
                 <span style={S.scoreBig(totalScore)}>{allScored ? totalScore : "—"}</span>
               </div>
-
-              {/* Kết luận */}
-              <div style={{ fontSize: 11, letterSpacing: 2, color: "#64748b", textTransform: "uppercase", marginBottom: 12 }}>
-                Kết luận
-              </div>
+              <div style={{ fontSize: 11, letterSpacing: 2, color: "#64748b", textTransform: "uppercase", marginBottom: 12 }}>Kết luận</div>
               <div style={S.checkboxRow}>
                 <div style={S.checkCard(goodJob, "#16a34a")} onClick={() => setGoodJob((v) => !v)}>
                   <div style={{ fontSize: 22, marginBottom: 6 }}>{goodJob ? "✅" : "⬜"}</div>
@@ -1188,249 +842,126 @@ export default function App() {
                   <div style={{ fontWeight: 800, fontSize: 13, color: baoVe ? "#3b82f6" : "#64748b" }}>VÀO VÒNG BẢO VỆ</div>
                 </div>
               </div>
-
-              {/* Feedback box */}
               <div style={{ marginBottom: 24 }}>
-                <div style={{ fontSize: 11, letterSpacing: 2, color: "#64748b", textTransform: "uppercase", marginBottom: 12 }}>
-                  Đóng góp — Hướng dẫn thêm hoàn thiện
-                </div>
-                <textarea
-                  style={S.feedbackBox}
-                  placeholder="Nhận xét, góp ý hoặc hướng dẫn cụ thể để hoàn thiện sáng kiến..."
-                  value={feedback}
-                  onChange={(e) => setFeedback(e.target.value)}
+                <div style={{ fontSize: 11, letterSpacing: 2, color: "#64748b", textTransform: "uppercase", marginBottom: 12 }}>Đóng góp — Hướng dẫn thêm hoàn thiện</div>
+                <textarea style={S.feedbackBox} placeholder="Nhận xét, góp ý hoặc hướng dẫn cụ thể để hoàn thiện sáng kiến..."
+                  value={feedback} onChange={(e) => setFeedback(e.target.value)}
                   onFocus={(e) => (e.target.style.borderColor = "#38bdf8")}
-                  onBlur={(e) => (e.target.style.borderColor = "#bae6fd")}
-                  rows={4}
-                />
+                  onBlur={(e) => (e.target.style.borderColor = "#bae6fd")} rows={4} />
               </div>
-
               {error && <div style={S.error}>{error}</div>}
-
-              <button
-                style={{ ...S.btnPrimary, opacity: (!allScored || submitting) ? 0.4 : 1 }}
-                onClick={handleSubmitScore}
-                disabled={!allScored || submitting}
-              >
-                {submitting
-                  ? "Đang lưu..."
-                  : current + 1 >= ideas.length
-                  ? "Lưu & Hoàn tất ✓"
-                  : `Lưu & Chuyển sang sáng kiến ${current + 2} →`}
+              <button style={{ ...S.btnPrimary, opacity: (!allScored || submitting) ? 0.4 : 1 }}
+                onClick={handleSubmitScore} disabled={!allScored || submitting}>
+                {submitting ? "Đang lưu..." : current + 1 >= ideas.length ? "Lưu & Hoàn tất ✓" : `Lưu & Chuyển sang sáng kiến ${current + 2} →`}
               </button>
             </div>
           </>
         );
       })()}
 
-      {/* ══ STEP: ADMIN ══ */}
+      {/* ══ ADMIN ══ */}
       {step === "admin" && (
         <div style={{ ...S.card, maxWidth: 640 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
             <h2 style={{ ...S.h1, margin: 0, fontSize: 20 }}>⚙️ Quản lý hệ thống</h2>
             <button onClick={exitAdmin} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 13, color: "#64748b", fontWeight: 700 }}>← Quay lại</button>
           </div>
-
           {!adminUnlocked ? (
             <>
               <p style={{ ...S.sub, marginBottom: 16 }}>Nhập mã PIN quản trị để tiếp tục</p>
               <label style={S.label}>Mã PIN</label>
-              <input
-                style={S.input}
-                type="password"
-                placeholder="••••"
-                value={adminPin}
+              <input style={S.input} type="password" placeholder="••••" value={adminPin}
                 onChange={e => { setAdminPin(e.target.value); setAdminError(""); }}
-                onKeyDown={e => e.key === "Enter" && handleAdminUnlock()}
-                maxLength={8}
-              />
+                onKeyDown={e => e.key === "Enter" && handleAdminUnlock()} maxLength={8} />
               {adminError && <div style={S.error}>{adminError}</div>}
               <button style={S.btnPrimary} onClick={handleAdminUnlock}>Xác nhận PIN →</button>
             </>
           ) : (
             <>
-              {/* Tabs */}
               <div style={{ display: "flex", gap: 8, marginBottom: 24, borderBottom: "1px solid #bae6fd", paddingBottom: 2 }}>
-                <button
-                  onClick={() => setAdminTab("reviewers")}
-                  style={{
-                    background: adminTab === "reviewers" ? "#e0f2fe" : "transparent",
-                    border: "none",
-                    borderBottom: adminTab === "reviewers" ? "2px solid #0ea5e9" : "2px solid transparent",
-                    padding: "8px 16px",
-                    fontSize: 13,
-                    fontWeight: 700,
-                    color: adminTab === "reviewers" ? "#0369a1" : "#64748b",
-                    cursor: "pointer",
-                  }}
-                >
-                  Thành viên
-                </button>
-                <button
-                  onClick={() => setAdminTab("assigners")}
-                  style={{
-                    background: adminTab === "assigners" ? "#e0f2fe" : "transparent",
-                    border: "none",
-                    borderBottom: adminTab === "assigners" ? "2px solid #0ea5e9" : "2px solid transparent",
-                    padding: "8px 16px",
-                    fontSize: 13,
-                    fontWeight: 700,
-                    color: adminTab === "assigners" ? "#0369a1" : "#64748b",
-                    cursor: "pointer",
-                  }}
-                >
-                  Người phân công
-                </button>
+                {(["reviewers", "assigners"] as const).map(tab => (
+                  <button key={tab} onClick={() => setAdminTab(tab)} style={{
+                    background: adminTab === tab ? "#e0f2fe" : "transparent", border: "none",
+                    borderBottom: adminTab === tab ? "2px solid #0ea5e9" : "2px solid transparent",
+                    padding: "8px 16px", fontSize: 13, fontWeight: 700,
+                    color: adminTab === tab ? "#0369a1" : "#64748b", cursor: "pointer",
+                  }}>
+                    {tab === "reviewers" ? "Thành viên" : "Người phân công"}
+                  </button>
+                ))}
               </div>
-
               {adminTab === "reviewers" ? (
                 <>
-                  {/* Add reviewer form */}
                   <div style={{ background: "#f0f9ff", border: "1.5px solid #bae6fd", borderRadius: 12, padding: "20px 20px 16px", marginBottom: 24 }}>
-                    <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: 1, color: "#0369a1", textTransform: "uppercase" as const, marginBottom: 14 }}>
-                      Thêm thành viên mới
-                    </div>
+                    <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: 1, color: "#0369a1", textTransform: "uppercase" as const, marginBottom: 14 }}>Thêm thành viên mới</div>
                     <div style={{ display: "flex", gap: 10, marginBottom: 10, flexWrap: "wrap" as const }}>
-                      <input
-                        style={{ ...S.input, flex: "0 0 130px", margin: 0 }}
-                        placeholder="Mã YD (VD: YD0003)"
-                        value={newYD}
-                        onChange={e => { setNewYD(e.target.value); setAdminError(""); }}
-                        maxLength={10}
-                      />
-                      <input
-                        style={{ ...S.input, flex: 1, minWidth: 160, margin: 0 }}
-                        placeholder="Họ và tên"
-                        value={newName}
+                      <input style={{ ...S.input, flex: "0 0 130px", margin: 0 }} placeholder="Mã YD" value={newYD}
+                        onChange={e => { setNewYD(e.target.value); setAdminError(""); }} maxLength={10} />
+                      <input style={{ ...S.input, flex: 1, minWidth: 160, margin: 0 }} placeholder="Họ và tên" value={newName}
                         onChange={e => { setNewName(e.target.value); setAdminError(""); }}
-                        onKeyDown={e => e.key === "Enter" && handleAddReviewer()}
-                      />
-                      <button
-                        style={{ ...S.btnPrimary, margin: 0, padding: "0 20px", height: 44, whiteSpace: "nowrap" as const }}
-                        onClick={handleAddReviewer}
-                      >
-                        + Thêm
-                      </button>
+                        onKeyDown={e => e.key === "Enter" && handleAddReviewer()} />
+                      <button style={{ ...S.btnPrimary, margin: 0, padding: "0 20px", height: 44, whiteSpace: "nowrap" as const }} onClick={handleAddReviewer}>+ Thêm</button>
                     </div>
                     {adminError && <div style={{ ...S.error, margin: 0 }}>{adminError}</div>}
                   </div>
-
-                  {/* Reviewer list */}
-                  <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: 1, color: "#64748b", textTransform: "uppercase" as const, marginBottom: 12 }}>
-                    Danh sách ({reviewerList.length} thành viên)
+                  <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: 1, color: "#64748b", textTransform: "uppercase" as const, marginBottom: 12 }}>Danh sách ({reviewerList.length} thành viên)</div>
+                  <div style={{ display: "flex", flexDirection: "column" as const, gap: 8 }}>
+                    {reviewerList.map(r => (
+                      <div key={r.reviewerId} style={{ display: "flex", alignItems: "center", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 10, padding: "10px 14px" }}>
+                        <span style={{ fontWeight: 800, fontSize: 13, color: "#0369a1", minWidth: 90 }}>{r.reviewerId}</span>
+                        <span style={{ flex: 1, fontSize: 14, color: "#0f172a" }}>{r.name}</span>
+                        <button onClick={() => handleDeleteReviewer(r.reviewerId)}
+                          style={{ background: "none", border: "1px solid #fca5a5", borderRadius: 6, color: "#dc2626", fontSize: 12, fontWeight: 700, cursor: "pointer", padding: "4px 10px" }}>Xóa</button>
+                      </div>
+                    ))}
                   </div>
-                  {reviewerList.length === 0 ? (
-                    <p style={{ color: "#94a3b8", fontSize: 13, textAlign: "center" as const, padding: "20px 0" }}>Chưa có thành viên nào</p>
-                  ) : (
-                    <div style={{ display: "flex", flexDirection: "column" as const, gap: 8 }}>
-                      {reviewerList.map(r => (
-                        <div key={r.reviewerId} style={{ display: "flex", alignItems: "center", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 10, padding: "10px 14px" }}>
-                          <span style={{ fontWeight: 800, fontSize: 13, color: "#0369a1", minWidth: 90 }}>{r.reviewerId}</span>
-                          <span style={{ flex: 1, fontSize: 14, color: "#0f172a" }}>{r.name}</span>
-                          <button
-                            onClick={() => handleDeleteReviewer(r.reviewerId)}
-                            style={{ background: "none", border: "1px solid #fca5a5", borderRadius: 6, color: "#dc2626", fontSize: 12, fontWeight: 700, cursor: "pointer", padding: "4px 10px" }}
-                          >
-                            Xóa
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
                 </>
               ) : (
                 <>
-                  {/* Add assigner form */}
                   <div style={{ background: "#f0f9ff", border: "1.5px solid #bae6fd", borderRadius: 12, padding: "20px 20px 16px", marginBottom: 24 }}>
-                    <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: 1, color: "#0369a1", textTransform: "uppercase" as const, marginBottom: 14 }}>
-                      Thêm người phân công
-                    </div>
-
+                    <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: 1, color: "#0369a1", textTransform: "uppercase" as const, marginBottom: 14 }}>Thêm người phân công</div>
                     <label style={{ ...S.label, marginBottom: 8 }}>Chọn Mã YD</label>
-                    <select
-                      style={{ ...S.input, margin: "0 0 14px" }}
-                      value={newAssignerYD}
-                      onChange={e => { setNewAssignerYD(e.target.value); setAdminError(""); }}
-                    >
+                    <select style={{ ...S.input, margin: "0 0 14px" }} value={newAssignerYD} onChange={e => { setNewAssignerYD(e.target.value); setAdminError(""); }}>
                       <option value="">-- Chọn --</option>
-                      {reviewerList.map(r => (
-                        <option key={r.reviewerId} value={r.reviewerId}>
-                          {r.reviewerId} - {r.name}
-                        </option>
-                      ))}
+                      {reviewerList.map(r => <option key={r.reviewerId} value={r.reviewerId}>{r.reviewerId} - {r.name}</option>)}
                     </select>
-
                     <label style={{ ...S.label, marginBottom: 8 }}>Chọn nhóm được phân công</label>
                     <div style={{ maxHeight: 200, overflowY: "auto", border: "1.5px solid #bae6fd", borderRadius: 8, padding: 10, background: "#fff", marginBottom: 10 }}>
-                      {reviewerList.filter(r => r.reviewerId !== newAssignerYD).length === 0 ? (
-                        <p style={{ color: "#94a3b8", fontSize: 13, textAlign: "center" as const }}>Không có thành viên nào</p>
-                      ) : (
-                        reviewerList.filter(r => r.reviewerId !== newAssignerYD).map(r => (
-                          <div
-                            key={r.reviewerId}
-                            onClick={() => toggleAssignee(r.reviewerId)}
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 10,
-                              padding: "8px 10px",
-                              borderRadius: 6,
-                              background: selectedAdminAssignees.includes(r.reviewerId) ? "#e0f2fe" : "#f8fafc",
-                              cursor: "pointer",
-                              marginBottom: 6,
-                            }}
-                          >
-                            <span style={{ fontSize: 18 }}>{selectedAdminAssignees.includes(r.reviewerId) ? "✅" : "⬜"}</span>
-                            <span style={{ fontWeight: 700, fontSize: 12, color: "#0369a1", minWidth: 70 }}>{r.reviewerId}</span>
-                            <span style={{ fontSize: 13, color: "#0f172a" }}>{r.name}</span>
-                          </div>
-                        ))
-                      )}
-                    </div>
-
-                    <button
-                      style={{ ...S.btnPrimary, margin: 0 }}
-                      onClick={handleAddAssigner}
-                    >
-                      + Thêm người phân công
-                    </button>
-                    {adminError && <div style={{ ...S.error, marginTop: 10 }}>{adminError}</div>}
-                  </div>
-
-                  {/* Assigner list */}
-                  <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: 1, color: "#64748b", textTransform: "uppercase" as const, marginBottom: 12 }}>
-                    Danh sách người phân công ({assignerList.length})
-                  </div>
-                  {assignerList.length === 0 ? (
-                    <p style={{ color: "#94a3b8", fontSize: 13, textAlign: "center" as const, padding: "20px 0" }}>Chưa có người phân công nào</p>
-                  ) : (
-                    <div style={{ display: "flex", flexDirection: "column" as const, gap: 12 }}>
-                      {assignerList.map(a => (
-                        <div key={a.reviewerId} style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 10, padding: "12px 14px" }}>
-                          <div style={{ display: "flex", alignItems: "center", marginBottom: 8 }}>
-                            <span style={{ fontWeight: 800, fontSize: 13, color: "#0369a1", minWidth: 90 }}>{a.reviewerId}</span>
-                            <span style={{ flex: 1, fontSize: 14, color: "#0f172a", fontWeight: 700 }}>{a.name}</span>
-                            <button
-                              onClick={() => handleDeleteAssigner(a.reviewerId)}
-                              style={{ background: "none", border: "1px solid #fca5a5", borderRadius: 6, color: "#dc2626", fontSize: 12, fontWeight: 700, cursor: "pointer", padding: "4px 10px" }}
-                            >
-                              Xóa
-                            </button>
-                          </div>
-                          <div style={{ fontSize: 11, color: "#64748b", marginBottom: 4 }}>Nhóm được phân công:</div>
-                          <div style={{ fontSize: 12, color: "#0f172a" }}>
-                            {a.assignees.map(yd => {
-                              const reviewer = reviewerList.find(r => r.reviewerId === yd);
-                              return reviewer ? `${yd} (${reviewer.name})` : yd;
-                            }).join(", ")}
-                          </div>
+                      {reviewerList.filter(r => r.reviewerId !== newAssignerYD).map(r => (
+                        <div key={r.reviewerId} onClick={() => toggleAssignee(r.reviewerId)}
+                          style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 10px", borderRadius: 6,
+                            background: selectedAdminAssignees.includes(r.reviewerId) ? "#e0f2fe" : "#f8fafc", cursor: "pointer", marginBottom: 6 }}>
+                          <span style={{ fontSize: 18 }}>{selectedAdminAssignees.includes(r.reviewerId) ? "✅" : "⬜"}</span>
+                          <span style={{ fontWeight: 700, fontSize: 12, color: "#0369a1", minWidth: 70 }}>{r.reviewerId}</span>
+                          <span style={{ fontSize: 13, color: "#0f172a" }}>{r.name}</span>
                         </div>
                       ))}
                     </div>
-                  )}
+                    <button style={{ ...S.btnPrimary, margin: 0 }} onClick={handleAddAssigner}>+ Thêm người phân công</button>
+                    {adminError && <div style={{ ...S.error, marginTop: 10 }}>{adminError}</div>}
+                  </div>
+                  <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: 1, color: "#64748b", textTransform: "uppercase" as const, marginBottom: 12 }}>Danh sách người phân công ({assignerList.length})</div>
+                  {assignerList.length === 0
+                    ? <p style={{ color: "#94a3b8", fontSize: 13, textAlign: "center" as const, padding: "20px 0" }}>Chưa có người phân công nào</p>
+                    : <div style={{ display: "flex", flexDirection: "column" as const, gap: 12 }}>
+                        {assignerList.map(a => (
+                          <div key={a.reviewerId} style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 10, padding: "12px 14px" }}>
+                            <div style={{ display: "flex", alignItems: "center", marginBottom: 8 }}>
+                              <span style={{ fontWeight: 800, fontSize: 13, color: "#0369a1", minWidth: 90 }}>{a.reviewerId}</span>
+                              <span style={{ flex: 1, fontSize: 14, color: "#0f172a", fontWeight: 700 }}>{a.name}</span>
+                              <button onClick={() => handleDeleteAssigner(a.reviewerId)}
+                                style={{ background: "none", border: "1px solid #fca5a5", borderRadius: 6, color: "#dc2626", fontSize: 12, fontWeight: 700, cursor: "pointer", padding: "4px 10px" }}>Xóa</button>
+                            </div>
+                            <div style={{ fontSize: 11, color: "#64748b", marginBottom: 4 }}>Nhóm được phân công:</div>
+                            <div style={{ fontSize: 12, color: "#0f172a" }}>
+                              {a.assignees.map(yd => { const rv = reviewerList.find(r => r.reviewerId === yd); return rv ? `${yd} (${rv.name})` : yd; }).join(", ")}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                  }
                 </>
               )}
-
               <div style={{ marginTop: 24, paddingTop: 16, borderTop: "1px solid #bae6fd", fontSize: 11, color: "#94a3b8", textAlign: "center" as const }}>
                 Danh sách được lưu tự động trong trình duyệt này
               </div>
@@ -1439,60 +970,32 @@ export default function App() {
         </div>
       )}
 
-      {/* ══ STEP: ASSIGN ══ */}
+      {/* ══ ASSIGN ══ */}
       {step === "assign" && (
         <div style={{ ...S.card, maxWidth: 800 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
             <h2 style={{ ...S.h1, margin: 0, fontSize: 20 }}>📋 Phân công sáng kiến</h2>
-            <button
-              onClick={() => { setStep("login"); setUnassignedIdeas([]); setSelectedIdeas([]); setSelectedAssignee(""); setAssignmentStats({}); }}
-              style={{ background: "none", border: "none", cursor: "pointer", fontSize: 13, color: "#64748b", fontWeight: 700 }}
-            >
-              ← Quay lại
-            </button>
+            <button onClick={() => { setStep("login"); setUnassignedIdeas([]); setSelectedIdeas([]); setSelectedAssignee(""); setAssignmentStats({}); }}
+              style={{ background: "none", border: "none", cursor: "pointer", fontSize: 13, color: "#64748b", fontWeight: 700 }}>← Quay lại</button>
           </div>
-
-          <p style={{ ...S.sub, marginBottom: 24 }}>
-            Chọn nhiều sáng kiến cùng lúc (checkbox) và phân công cho 1 thành viên trong nhóm.
-          </p>
-
-          {/* Thống kê tổng quan */}
+          <p style={{ ...S.sub, marginBottom: 24 }}>Chọn nhiều sáng kiến cùng lúc và phân công cho 1 thành viên trong nhóm.</p>
           {myAssignees.length > 0 && (
             <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 12, padding: "16px 18px", marginBottom: 24 }}>
-              <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: 1, color: "#16a34a", textTransform: "uppercase" as const, marginBottom: 12 }}>
-                📊 Tổng quan phân công
-              </div>
+              <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: 1, color: "#16a34a", textTransform: "uppercase" as const, marginBottom: 12 }}>📊 Tổng quan phân công</div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10 }}>
                 {myAssignees.map(yd => {
-                  const reviewer = loadReviewers().find(r => r.reviewerId === yd);
+                  const rv = DEFAULT_REVIEWERS.find(r => r.reviewerId === yd);
                   const count = assignmentStats[yd] || 0;
                   return (
-                    <div
-                      key={yd}
-                      style={{
-                        background: "#fff",
-                        border: "1px solid #bbf7d0",
-                        borderRadius: 8,
-                        padding: "10px 12px",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}
-                    >
-                      <div>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: "#16a34a" }}>{yd}</div>
-                        <div style={{ fontSize: 12, color: "#0f172a", marginTop: 2 }}>{reviewer?.name}</div>
-                      </div>
-                      <div style={{ fontSize: 18, fontWeight: 900, color: count > 0 ? "#16a34a" : "#94a3b8" }}>
-                        {count}
-                      </div>
+                    <div key={yd} style={{ background: "#fff", border: "1px solid #bbf7d0", borderRadius: 8, padding: "10px 12px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <div><div style={{ fontSize: 11, fontWeight: 700, color: "#16a34a" }}>{yd}</div><div style={{ fontSize: 12, color: "#0f172a", marginTop: 2 }}>{rv?.name}</div></div>
+                      <div style={{ fontSize: 18, fontWeight: 900, color: count > 0 ? "#16a34a" : "#94a3b8" }}>{count}</div>
                     </div>
                   );
                 })}
               </div>
             </div>
           )}
-
           {unassignedIdeas.length === 0 ? (
             <div style={{ textAlign: "center" as const, padding: "40px 20px" }}>
               <div style={{ fontSize: 48, marginBottom: 16 }}>✅</div>
@@ -1504,103 +1007,47 @@ export default function App() {
                 <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: 1, color: "#64748b", textTransform: "uppercase" as const }}>
                   Sáng kiến chưa phân công ({unassignedIdeas.length})
                 </div>
-                {unassignedIdeas.length > 0 && (
-                  <button
-                    onClick={() => {
-                      if (selectedIdeas.length === unassignedIdeas.length) {
-                        setSelectedIdeas([]);
-                      } else {
-                        setSelectedIdeas([...unassignedIdeas]);
-                      }
-                    }}
-                    style={{
-                      background: "none",
-                      border: "1px solid #bae6fd",
-                      borderRadius: 6,
-                      padding: "6px 12px",
-                      fontSize: 11,
-                      color: "#0369a1",
-                      fontWeight: 700,
-                      cursor: "pointer",
-                    }}
-                  >
-                    {selectedIdeas.length === unassignedIdeas.length ? "Bỏ chọn tất cả" : "Chọn tất cả"}
-                  </button>
-                )}
+                <button onClick={() => setSelectedIdeas(selectedIdeas.length === unassignedIdeas.length ? [] : [...unassignedIdeas])}
+                  style={{ background: "none", border: "1px solid #bae6fd", borderRadius: 6, padding: "6px 12px", fontSize: 11, color: "#0369a1", fontWeight: 700, cursor: "pointer" }}>
+                  {selectedIdeas.length === unassignedIdeas.length ? "Bỏ chọn tất cả" : "Chọn tất cả"}
+                </button>
               </div>
-
               <div style={{ display: "flex", flexDirection: "column" as const, gap: 10, marginBottom: 24 }}>
                 {unassignedIdeas.map((idea, idx) => {
                   const isSelected = selectedIdeas.includes(idea);
                   return (
-                    <div
-                      key={idx}
-                      onClick={() => toggleIdeaSelection(idea)}
-                      style={{
-                        padding: "12px 16px",
-                        background: isSelected ? "#e0f2fe" : "#f8fafc",
-                        border: isSelected ? "2px solid #0ea5e9" : "1px solid #e2e8f0",
-                        borderRadius: 10,
-                        cursor: "pointer",
-                        transition: "all .2s",
-                      }}
-                    >
+                    <div key={idx} onClick={() => toggleIdeaSelection(idea)}
+                      style={{ padding: "12px 16px", background: isSelected ? "#e0f2fe" : "#f8fafc", border: isSelected ? "2px solid #0ea5e9" : "1px solid #e2e8f0", borderRadius: 10, cursor: "pointer", transition: "all .2s" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
                         <span style={{ fontSize: 18 }}>{isSelected ? "✅" : "⬜"}</span>
                         <span style={{ fontWeight: 800, fontSize: 14, color: "#0f172a", flex: 1 }}>{idea.tenYT || "(Chưa có tên)"}</span>
                         <span style={{ fontSize: 11, color: "#64748b", letterSpacing: 1 }}>{idea.sheetName}</span>
                       </div>
-                      <div style={{ fontSize: 12, color: "#64748b", marginLeft: 28 }}>
-                        Mã NV: {idea.maNV} · {idea.level}
-                      </div>
+                      <div style={{ fontSize: 12, color: "#64748b", marginLeft: 28 }}>Mã NV: {idea.maNV} · {idea.level}</div>
                     </div>
                   );
                 })}
               </div>
-
               {selectedIdeas.length > 0 && (
                 <>
                   <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 8, padding: "10px 14px", marginBottom: 16 }}>
-                    <div style={{ fontSize: 11, color: "#16a34a", fontWeight: 700, marginBottom: 4 }}>
-                      Đã chọn {selectedIdeas.length} sáng kiến:
-                    </div>
-                    <div style={{ fontSize: 12, color: "#0f172a" }}>
-                      {selectedIdeas.map(idea => idea.tenYT || "(Chưa có tên)").join(", ")}
-                    </div>
+                    <div style={{ fontSize: 11, color: "#16a34a", fontWeight: 700, marginBottom: 4 }}>Đã chọn {selectedIdeas.length} sáng kiến:</div>
+                    <div style={{ fontSize: 12, color: "#0f172a" }}>{selectedIdeas.map(idea => idea.tenYT || "(Chưa có tên)").join(", ")}</div>
                   </div>
-
-                  <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: 1, color: "#64748b", textTransform: "uppercase" as const, marginBottom: 12 }}>
-                    Chọn người được phân công
-                  </div>
-
-                  <select
-                    style={{ ...S.input, marginBottom: 20 }}
-                    value={selectedAssignee}
-                    onChange={e => { setSelectedAssignee(e.target.value); setError(""); }}
-                  >
+                  <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: 1, color: "#64748b", textTransform: "uppercase" as const, marginBottom: 12 }}>Chọn người được phân công</div>
+                  <select style={{ ...S.input, marginBottom: 20 }} value={selectedAssignee} onChange={e => { setSelectedAssignee(e.target.value); setError(""); }}>
                     <option value="">-- Chọn thành viên --</option>
                     {myAssignees.map(yd => {
-                      const reviewer = loadReviewers().find(r => r.reviewerId === yd);
+                      const rv = DEFAULT_REVIEWERS.find(r => r.reviewerId === yd);
                       const count = assignmentStats[yd] || 0;
-                      return (
-                        <option key={yd} value={yd}>
-                          {yd} - {reviewer?.name || ""} {count > 0 ? `(đã có ${count} sáng kiến)` : ""}
-                        </option>
-                      );
+                      return <option key={yd} value={yd}>{yd} - {rv?.name || ""} {count > 0 ? `(đã có ${count} sáng kiến)` : ""}</option>;
                     })}
                   </select>
-
                   {error && <div style={S.error}>{error}</div>}
-
-                  <button
-                    style={{ ...S.btnPrimary, opacity: !selectedAssignee || loading ? 0.4 : 1 }}
-                    onClick={handleAssignIdea}
-                    disabled={!selectedAssignee || loading}
-                  >
-                    {loading
-                      ? "Đang phân công..."
-                      : selectedAssignee
-                      ? `✓ Phân công ${selectedIdeas.length} sáng kiến cho ${loadReviewers().find(r => r.reviewerId === selectedAssignee)?.name || selectedAssignee}`
+                  <button style={{ ...S.btnPrimary, opacity: !selectedAssignee || loading ? 0.4 : 1 }}
+                    onClick={handleAssignIdea} disabled={!selectedAssignee || loading}>
+                    {loading ? "Đang phân công..." : selectedAssignee
+                      ? `✓ Phân công ${selectedIdeas.length} sáng kiến cho ${DEFAULT_REVIEWERS.find(r => r.reviewerId === selectedAssignee)?.name || selectedAssignee}`
                       : "✓ Phân công"}
                   </button>
                 </>
@@ -1610,50 +1057,26 @@ export default function App() {
         </div>
       )}
 
-      {/* ══ STEP: DONE ══ */}
+      {/* ══ DONE ══ */}
       {step === "done" && (
         <div style={{ ...S.card, ...S.done }}>
           <div style={{ fontSize: 56, marginBottom: 16 }}>🎉</div>
           <h2 style={{ ...S.h1, fontSize: 22 }}>Hoàn tất chấm điểm!</h2>
           <p style={{ color: "#64748b", fontSize: 14, margin: "8px 0 28px" }}>
-            {ideas.length > 0
-              ? `Đã chấm ${ideas.length} sáng kiến. Kết quả đã được lưu vào Google Sheet.`
-              : "Hiện không có sáng kiến nào cần chấm."}
+            {ideas.length > 0 ? `Đã chấm ${ideas.length} sáng kiến. Kết quả đã được lưu.` : "Hiện không có sáng kiến nào cần chấm."}
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" as const }}>
-            <button
-              style={{ ...S.btnSecondary, padding: "12px 28px" }}
-              onClick={() => {
-                setStep("login");
-                setPreview(null);
-                setReviewerId("");
-                setIdeas([]);
-                setReviewer(null);
-                setAssignmentStats({});
-                setSelectedIdeas([]);
-                setSelectedAssignee("");
-              }}
-            >
+            <button style={{ ...S.btnSecondary, padding: "12px 28px" }}
+              onClick={() => { setStep("login"); setPreview(null); setReviewerId(""); setIdeas([]); setReviewer(null); setAssignmentStats({}); setSelectedIdeas([]); setSelectedAssignee(""); }}>
               ← Quay lại trang chủ
             </button>
-            <a
-              href={PROGRESS_TRACKING_URL}
-              target="_blank"
-              rel="noreferrer"
-              style={{
-                ...S.btnPrimary,
-                padding: "12px 28px",
-                textDecoration: "none",
-                display: "inline-block",
-                boxShadow: "0 4px 14px rgba(14,165,233,0.35)",
-              }}
-            >
+            <a href={PROGRESS_TRACKING_URL} target="_blank" rel="noreferrer"
+              style={{ ...S.btnPrimary, padding: "12px 28px", textDecoration: "none", display: "inline-block" }}>
               📊 Theo dõi tiến độ chấm
             </a>
           </div>
         </div>
       )}
-
     </div>
   );
 }
