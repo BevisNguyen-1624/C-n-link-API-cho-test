@@ -570,15 +570,18 @@ export default function App() {
   };
 
   const handleStart = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const res = await api.get({ action: "getIdeas", reviewerId: preview.reviewerId });
-      if (res.ok) {
-        setReviewer(preview);
-        setIdeas(res.ideas);
-        setIsAssigner(res.isAssigner || false);
-        const savedProgress = loadProgress(preview.reviewerId);
+  setLoading(true);
+  setError("");
+  try {
+    const res = await api.get({ action: "getIdeas", reviewerId: preview.reviewerId });
+    if (res.ok) {
+      setReviewer(preview);
+      setIdeas(res.ideas);
+      setIsAssigner(res.isAssigner || false);
+
+      const savedProgress = loadProgress(preview.reviewerId);
+      if (savedProgress && res.ideas.length > 0) {
+        // ← Tìm đúng vị trí theo ideaKey thay vì dùng index cũ
         if (savedProgress.currentIdeaKey) {
           const idx = res.ideas.findIndex(
             idea => `${idea.sheetName}_${idea.rowIndex}` === savedProgress.currentIdeaKey
