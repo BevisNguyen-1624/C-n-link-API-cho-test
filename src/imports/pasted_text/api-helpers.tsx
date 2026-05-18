@@ -531,18 +531,20 @@ export default function App() {
   }, [current, ideas]);
 
   useEffect(() => {
-    if (!reviewer || step !== "scoring" || !ideas[current]) return;
-    const hasScores = Object.values(scores).some(s => s !== null && s !== undefined);
-    if (!hasScores) return;
-    const progress: Progress = {
-      reviewerId: reviewer.reviewerId,
-      currentIndex: current,
-      currentIdeaKey: `${idea.sheetName}_${idea.rowIndex}`,
-      scores: { ...scores, goodJob, baoVe, feedback },
-      savedAt: new Date().toISOString(),
-    };
-    saveProgress(progress);
-  }, [scores, goodJob, baoVe, feedback, current, reviewer, step, ideas]);
+  if (!reviewer || step !== "scoring" || !ideas[current]) return;
+  const hasScores = Object.values(scores).some(s => s !== null && s !== undefined);
+  if (!hasScores) return;
+
+  const idea = ideas[current]; // ← phải có dòng này TRƯỚC khi dùng idea
+  const progress: Progress = {
+    reviewerId: reviewer.reviewerId,
+    currentIndex: current,
+    currentIdeaKey: `${idea.sheetName}_${idea.rowIndex}`,
+    scores: { ...scores, goodJob, baoVe, feedback },
+    savedAt: new Date().toISOString(),
+  };
+  saveProgress(progress);
+}, [scores, goodJob, baoVe, feedback, current, reviewer, step, ideas]);
 
   const totalScore = CRITERIA.reduce((s, c) => s + (scores[c.key] ?? 0), 0);
   const allScored  = CRITERIA.every((c) => scores[c.key] !== null && scores[c.key] !== undefined);
