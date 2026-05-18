@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-const API_URL = "https://script.google.com/macros/s/AKfycbwf8mewVPkrprPqTUVb7Bwi5k6IyL53_4HJQMZqWelOTDKW9E0hrWa2QTy4z9zJsOU/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzTvIfaVjVAL-XfYs9-9irvEMTW-PiaELP0bA_Mc5f9F_v5HkLhEnjz5qX0S_hECOI/exec";
 const USE_MOCK = false;
 const ADMIN_PIN = "1234";
 
@@ -649,7 +649,7 @@ export default function App() {
   const handleGoToAssign = async () => {
     setLoading(true); setError("");
     try {
-      const res = await api.get({ action: "getUnassignedIdeas" });
+      const res = await api.get({ action: "getUnassignedIdeas", reviewerId: preview.reviewerId });
       if (res.ok) {
         setUnassignedIdeas(res.ideas);
         const assigners = loadAssigners();
