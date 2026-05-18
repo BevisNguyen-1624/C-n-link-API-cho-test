@@ -44,6 +44,7 @@ interface Assignment {
 interface Progress {
   reviewerId: string;
   currentIndex: number;
+  currentIdeaKey?: string;
   scores: Record<string, any>;
   savedAt: string;
 }
@@ -536,6 +537,7 @@ export default function App() {
     const progress: Progress = {
       reviewerId: reviewer.reviewerId,
       currentIndex: current,
+      currentIdeaKey: `${idea.sheetName}_${idea.rowIndex}`,
       scores: { ...scores, goodJob, baoVe, feedback },
       savedAt: new Date().toISOString(),
     };
@@ -577,20 +579,27 @@ export default function App() {
         setIdeas(res.ideas);
         setIsAssigner(res.isAssigner || false);
         const savedProgress = loadProgress(preview.reviewerId);
-        if (savedProgress && res.ideas.length > 0) {
-          setCurrent(Math.min(savedProgress.currentIndex, res.ideas.length - 1));
+        if (savedProgress.currentIdeaKey) {
+          const idx = res.ideas.findIndex(
+            idea => `${idea.sheetName}_${idea.rowIndex}` === savedProgress.currentIdeaKey
+          );
+          setCurrent(idx >= 0 ? idx : 0);
         } else {
-          setCurrent(0);
+          setCurrent(Math.min(savedProgress.currentIndex, res.ideas.length - 1));
         }
-        setStep(res.ideas.length === 0 ? "done" : "scoring");
       } else {
-        setError(res.error || "Không lấy được dữ liệu");
+        setCurrent(0);
       }
-    } catch {
-      setError("Lỗi kết nối.");
+
+      setStep(res.ideas.length === 0 ? "done" : "scoring");
+    } else {
+      setError(res.error || "Không lấy được dữ liệu");
     }
-    setLoading(false);
-  };
+  } catch {
+    setError("Lỗi kết nối.");
+  }
+  setLoading(false);
+};
 
   const handleAdminUnlock = () => {
     if (adminPin === ADMIN_PIN) { setAdminUnlocked(true); setAdminError(""); }
