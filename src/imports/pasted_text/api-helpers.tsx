@@ -26,6 +26,15 @@ const DEFAULT_REVIEWERS = [
   { reviewerId: "YD21885", name: "Trần Thị Hồng" },
   { reviewerId: "YD11228", name: "Đào Hồng Nhung" },
   { reviewerId: "YD26002", name: "Lê Việt Hà" },
+  { reviewerId: "YD0585",  name: "Phạm Hải Linh" },
+  { reviewerId: "YD16261", name: "Nguyễn Thị Thúy Hằng" },
+  { reviewerId: "YD19573", name: "Trần Thị Hằng" },
+  { reviewerId: "YD24268", name: "Lý Minh Phương" },
+  { reviewerId: "YD24638", name: "Tạ Thu Trang" },
+  { reviewerId: "YD25601", name: "Nguyễn Huy Bình" },
+  { reviewerId: "YD26006", name: "Nguyễn Dương Bảo Ngọc" },
+  { reviewerId: "YD26299", name: "Nguyễn Thị Thùy Duyên" },
+  { reviewerId: "YD26331", name: "Lê Đức Huy" },
 ];
 
 interface Assigner {
