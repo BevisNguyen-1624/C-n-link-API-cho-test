@@ -24,8 +24,19 @@ const LS_KEY_COMPLETED = "hoYoTa_completed"; // Sáng kiến đã hoàn thành c
 const PROGRESS_TRACKING_URL = "https://drive.google.com/1oHkOgPVjNrvt8-YzDsp1dWOZqaNKdklh6BTFKx6nksI"; // URL theo dõi tiến độ
 
 const DEFAULT_REVIEWERS = [
-  { reviewerId: "YD0001", name: "Nguyễn Việt Hòa" },
-  { reviewerId: "YD0002", name: "Trần Thị B" },
+  { reviewerId: "YD0001",  name: "Nguyễn Việt Hòa" },
+  { reviewerId: "FGG0001", name: "Nguyễn Kim Thanh" },
+  { reviewerId: "YD5591",  name: "Lê Đình Vãng" },
+  { reviewerId: "YD6666",  name: "Đỗ Quang Hiếu" },
+  { reviewerId: "YD0067",  name: "Phạm Quang Trung" },
+  { reviewerId: "YD0089",  name: "Bùi Thị Ngân" },
+  { reviewerId: "YD24797", name: "Tăng Duy Phương" },
+  { reviewerId: "YD0003",  name: "Tạ Thị Mận" },
+  { reviewerId: "YD23442", name: "Nguyễn Hoàng Đoàn" },
+  { reviewerId: "YD0026",  name: "Đinh Trung Sơn" },
+  { reviewerId: "YD21885", name: "Trần Thị Hồng" },
+  { reviewerId: "YD11228", name: "Đào Hồng Nhung" },
+  { reviewerId: "YD26002", name: "Lê Việt Hà" },
 ];
 
 interface Assigner {
