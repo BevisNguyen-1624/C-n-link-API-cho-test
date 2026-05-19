@@ -8,7 +8,7 @@ const LS_KEY_ASSIGNERS = "hoYoTa_assigners";
 const LS_KEY_ASSIGNMENTS = "hoYoTa_assignments";
 const LS_KEY_PROGRESS = "hoYoTa_progress";
 const LS_KEY_COMPLETED = "hoYoTa_completed";
-const PROGRESS_TRACKING_URL = "https://docs.google.com/spreadsheets/d/1oHkOgPVjNrvt8-YzDsp1dWOZqaNKdklh6BTFKx6nksI/edit?gid=1554582842#gid=1554582842";
+const PROGRESS_TRACKING_URL = "https://docs.google.com/spreadsheets/d/1oHkOgPVjNrvt8-YzDsp1dWOZqaNKdklh6BTFKx6nksI/edit?gid=2068815285#gid=2068815285";
 
 // ═══ DANH SÁCH CỐ ĐỊNH — không phụ thuộc localStorage ═══
 const DEFAULT_REVIEWERS = [
@@ -781,7 +781,7 @@ export default function App() {
       {/* ══ LOGIN ══ */}
       {step === "login" && (
         <div style={{ ...S.card, maxWidth: 480 }}>
-          <h1 style={{ ...S.h1, textAlign: "center" }}>Chào mừng ☀️</h1>
+          <h1 style={{ ...S.h1, textAlign: "center" }}>Chào mừng anh chị ☀️</h1>
           <p style={{ ...S.sub, textAlign: "center" }}>Nhập mã YD để bắt đầu chấm điểm sáng kiến</p>
           <label style={S.label}>Mã YD</label>
           <input ref={inputRef} style={S.input} placeholder="Mã YD của anh/chị"
