@@ -725,6 +725,7 @@ export default function App() {
       const res = await api.post({
         action: "submitScore",
         sheetName: idea.sheetName, rowIndex: idea.rowIndex,
+        reviewerId: reviewer.reviewerId,
         scoreN: scores.scoreN, scoreO: scores.scoreO, scoreP: scores.scoreP, scoreQ: scores.scoreQ,
         goodJob, baoVe, feedback, reviewerName: reviewer.name,
       });
