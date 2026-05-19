@@ -782,7 +782,7 @@ export default function App() {
       {step === "login" && (
         <div style={{ ...S.card, maxWidth: 480 }}>
           <h1 style={{ ...S.h1, textAlign: "center" }}>Chào mừng ☀️</h1>
-          <p style={S.sub}>Nhập mã YD để bắt đầu chấm điểm sáng kiến</p>
+          <p style={{ ...S.sub, textAlign: "center" }}>Nhập mã YD để bắt đầu chấm điểm sáng kiến</p>
           <label style={S.label}>Mã YD</label>
           <input ref={inputRef} style={S.input} placeholder="Mã YD của anh/chị"
             value={reviewerId}
