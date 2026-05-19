@@ -203,7 +203,7 @@ const MOCK_IDEAS = [
 const mockAPI = {
   // ═══ FIX: luôn dùng DEFAULT_REVIEWERS, không dùng localStorage ═══
   verifyReviewer: async (reviewerId: string) => {
-    await new Promise(r => setTimeout(r, 0);
+    await new Promise(r => setTimeout(r, 0);)
     const trimmedId = reviewerId.trim().toUpperCase();
 
     const reviewer = DEFAULT_REVIEWERS.find(r => r.reviewerId === trimmedId);
