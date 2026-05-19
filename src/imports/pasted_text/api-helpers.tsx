@@ -57,7 +57,7 @@ interface Progress {
   savedAt: string;
 }
 
-// localStorage chỉ dùng cho Admin thêm/xóa thành viên
+// localStorage chỉ dùng cho Admin thêm/xóa thành viê
 // Login luôn dùng DEFAULT_REVIEWERS
 function loadReviewers(): { reviewerId: string; name: string }[] {
   try {
@@ -203,7 +203,7 @@ const MOCK_IDEAS = [
 const mockAPI = {
   // ═══ FIX: luôn dùng DEFAULT_REVIEWERS, không dùng localStorage ═══
   verifyReviewer: async (reviewerId: string) => {
-    await new Promise(r => setTimeout(r, 800));
+    await new Promise(r => setTimeout(r, 0);
     const trimmedId = reviewerId.trim().toUpperCase();
 
     const reviewer = DEFAULT_REVIEWERS.find(r => r.reviewerId === trimmedId);
@@ -229,7 +229,7 @@ const mockAPI = {
   },
 
   getIdeas: async (reviewerId: string) => {
-    await new Promise(r => setTimeout(r, 600));
+    await new Promise(r => setTimeout(r, 0));
     const assignments = loadAssignments();
     const assigners = loadAssigners();
     const completed = loadCompletedIdeas();
@@ -253,7 +253,7 @@ const mockAPI = {
   },
 
   submitScore: async (data: any) => {
-    await new Promise(r => setTimeout(r, 500));
+    await new Promise(r => setTimeout(r, 0));
     console.log("📊 Đã lưu điểm:", data);
     const ideaKey = `${data.sheetName}_${data.rowIndex}`;
     markIdeaCompleted(ideaKey);
@@ -261,7 +261,7 @@ const mockAPI = {
   },
 
   assignIdea: async (data: { ideaKey: string; assignedTo: string; assignedBy: string }) => {
-    await new Promise(r => setTimeout(r, 300));
+    await new Promise(r => setTimeout(r, 0));
     const assignments = loadAssignments();
     const newAssignment: Assignment = { ...data, assignedAt: new Date().toISOString() };
     assignments.push(newAssignment);
@@ -270,7 +270,7 @@ const mockAPI = {
   },
 
   getUnassignedIdeas: async () => {
-    await new Promise(r => setTimeout(r, 400));
+    await new Promise(r => setTimeout(r, 0));
     const assignments = loadAssignments();
     const completed = loadCompletedIdeas();
     const assignedKeys = new Set(assignments.map(a => a.ideaKey));
