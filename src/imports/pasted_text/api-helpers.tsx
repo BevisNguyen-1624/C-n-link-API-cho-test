@@ -506,7 +506,15 @@ const S: Record<string, any> = {
     cursor: "pointer", transition: "all .2s", textAlign: "center" as const,
     boxShadow: active ? `0 4px 14px ${color}30` : "none",
   }),
-  progress: { width: "100%", maxWidth: 800, marginBottom: 20 },
+  progress: progress: { 
+  width: "100%", 
+  maxWidth: 800, 
+  marginBottom: 20,
+  background: "rgba(255,255,255,0.5)",
+  backdropFilter: "blur(8px)",
+  borderRadius: 10,
+  padding: "8px 12px",
+},
   progressBar: { height: 4, background: "#bae6fd", borderRadius: 99, overflow: "hidden", marginTop: 8 },
   progressFill: (pct: number) => ({
     height: "100%", width: `${pct}%`,
