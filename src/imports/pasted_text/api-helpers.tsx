@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import bgImage from "../imports/KV_HÒ_YO_TA-01.jpeg";
+import bgImage from "../KV_HÒ_YO_TA-01.jpeg";
 
 
 const API_URL = "https://script.google.com/macros/s/AKfycbw7q6BnJ0ymPiTHqQbJuQSI3ensOoec_ENOadSEH4rjjVHw42z-ANk2WqubC0uWA5s/exec";
