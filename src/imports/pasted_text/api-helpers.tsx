@@ -414,7 +414,9 @@ const S: Record<string, any> = {
     textTransform: "uppercase" as const,
   },
   badge: {
-    background: "#ffffff",
+    background: "rgba(255, 255, 255, 0.75)",
+    backdropFilter: "blur(12px)",
+    WebkitBackdropFilter: "blur(12px)",
     border: "1px solid #bae6fd",
     borderRadius: 20,
     padding: "4px 14px",
