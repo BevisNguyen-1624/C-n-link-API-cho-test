@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+import bgImage from "../imports/KV_HÒ_YO_TA-01.jpeg";
+
 
 const API_URL = "https://script.google.com/macros/s/AKfycbw7q6BnJ0ymPiTHqQbJuQSI3ensOoec_ENOadSEH4rjjVHw42z-ANk2WqubC0uWA5s/exec";
 const USE_MOCK = false;
@@ -386,7 +388,7 @@ const GOODJOB_THRESHOLD = 7;
 const S: Record<string, any> = {
   page: {
     minHeight: "100vh",
-    background: "linear-gradient(160deg, #e0f7ff 0%, #dbeafe 55%, #ede9fe 100%)",
+    background: `url('${bgImage}') center top / cover no-repeat fixed`,
     fontFamily: "'Nunito', sans-serif",
     color: "#0f172a",
     display: "flex",
