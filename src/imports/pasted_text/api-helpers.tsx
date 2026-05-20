@@ -839,7 +839,7 @@ export default function App() {
               <button style={S.btnPrimary} onClick={handleStart} disabled={loading}
                 onMouseOver={(e) => ((e.target as HTMLButtonElement).style.opacity = "0.85")}
                 onMouseOut={(e) => ((e.target as HTMLButtonElement).style.opacity = "1")}>
-                {loading ? "Đang tải..." : "Bắt đầu chấm điểm →"}
+                {loading ? "Đang tải sáng kiến..." : "Bắt đầu chấm điểm →"}
               </button>
               {preview.isAssigner && (
                 <button style={{ ...S.btnSecondary, width: "100%", marginTop: 12, padding: "12px" }}
