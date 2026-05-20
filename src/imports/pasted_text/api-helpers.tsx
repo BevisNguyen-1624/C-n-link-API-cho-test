@@ -1208,31 +1208,30 @@ export default function App() {
       )}
 
       {/* ══ DONE ══ */}
-      {step === "done" && (
-        <div style={{ ...S.card, ...S.done }}>
-          <div style={{ fontSize: 56, marginBottom: 16 }}>🎉</div>
-          <h2 style={{ ...S.h1, fontSize: 22 }}>Hoàn tất chấm điểm!</h2>
-          <p style={{ color: "#64748b", fontSize: 14, margin: "8px 0 28px" }}>
-            {ideas.length > 0 ? `Đã chấm ${ideas.length} sáng kiến. Kết quả đã được lưu.` : "Hiện không có sáng kiến nào cần chấm."}
-          </p>
-          <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" as const }}>
-            <button style={{ ...S.btnSecondary, padding: "12px 28px" }}
-              onClick={() => { setStep("login"); setPreview(null); setReviewerId(""); setIdeas([]); setReviewer(null); setAssignmentStats({}); setSelectedIdeas([]); setSelectedAssignee(""); }}>
-              ← Quay lại trang chủ
-            </button>
-            <a href={PROGRESS_TRACKING_URL} target="_blank" rel="noreferrer"
-  style={{ ...S.btnPrimary, padding: "12px 28px", textDecoration: "none", display: "inline-block" }}>
-  📊 Theo dõi tiến độ chấm
-</a>
-{mySheetUrl && (
-  <a href={mySheetUrl} target="_blank" rel="noreferrer"
-    style={{ ...S.btnSecondary, padding: "12px 28px", textDecoration: "none", display: "inline-block" }}>
-    📄 Xem sheet chấm của tôi
-  </a>
-)}
-            </a>
-          </div>
-      )}
+{step === "done" && (
+  <div style={{ ...S.card, ...S.done }}>
+    <div style={{ fontSize: 56, marginBottom: 16 }}>🎉</div>
+    <h2 style={{ ...S.h1, fontSize: 22 }}>Hoàn tất chấm điểm!</h2>
+    <p style={{ color: "#64748b", fontSize: 14, margin: "8px 0 28px" }}>
+      {ideas.length > 0 ? `Đã chấm ${ideas.length} sáng kiến. Kết quả đã được lưu.` : "Hiện không có sáng kiến nào cần chấm."}
+    </p>
+    <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" as const }}>
+      <button style={{ ...S.btnSecondary, padding: "12px 28px" }}
+        onClick={() => { setStep("login"); setPreview(null); setReviewerId(""); setIdeas([]); setReviewer(null); setAssignmentStats({}); setSelectedIdeas([]); setSelectedAssignee(""); }}>
+        ← Quay lại trang chủ
+      </button>
+      <a href={PROGRESS_TRACKING_URL} target="_blank" rel="noreferrer"
+        style={{ ...S.btnPrimary, padding: "12px 28px", textDecoration: "none", display: "inline-block" }}>
+        📊 Theo dõi tiến độ chấm
+      </a>
     </div>
-  );
-}
+    {mySheetUrl && (
+      <div style={{ marginTop: 12 }}>
+        <a href={mySheetUrl} target="_blank" rel="noreferrer"
+          style={{ ...S.btnSecondary, padding: "12px 28px", textDecoration: "none", display: "inline-block" }}>
+          📄 Xem sheet chấm của tôi
+        </a>
+      </div>
+    )}
+  </div>
+)}
