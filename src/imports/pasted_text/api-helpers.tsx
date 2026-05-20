@@ -871,7 +871,7 @@ export default function App() {
     position: "absolute",
     bottom: -50,
     left: `${pct}%`,
-    transform: `translateX(-${pct * 0.8}px)`,   // ← bù trừ theo %
+    transform: `translateX(-${pct * 0.5}px)`,   // ← bù trừ theo %
     width: 120,
     height: 120,
     objectFit: "contain",
