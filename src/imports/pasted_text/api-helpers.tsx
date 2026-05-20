@@ -506,7 +506,7 @@ const S: Record<string, any> = {
     cursor: "pointer", transition: "all .2s", textAlign: "center" as const,
     boxShadow: active ? `0 4px 14px ${color}30` : "none",
   }),
-  progress: progress: { 
+  progress: { 
   width: "100%", 
   maxWidth: 800, 
   marginBottom: 20,
