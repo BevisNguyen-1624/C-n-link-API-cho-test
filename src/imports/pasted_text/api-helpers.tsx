@@ -870,9 +870,9 @@ export default function App() {
       style={{
         position: "absolute",
         bottom: -30,
-        left: `clamp(0%, calc(${pct}% - 36px), calc(100% - 36px))`,
-        width: 72,
-        height: 72,
+        left: `clamp(0%, calc(${pct}% - 45px), calc(100% - 36px))`,
+        width: 100,
+        height: 100,
         objectFit: "contain",
         transition: "left 0.4s ease",
         pointerEvents: "none",
