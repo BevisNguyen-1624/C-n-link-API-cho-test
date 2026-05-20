@@ -230,6 +230,7 @@ const MOCK_IDEAS = [
     goodJob: false, baoVe: false, feedback: "",
   },
 ];
+const [loadingIdeas, setLoadingIdeas] = useState(false);
 
 const mockAPI = {
   // ═══ FIX: luôn dùng DEFAULT_REVIEWERS, không dùng localStorage ═══
@@ -622,6 +623,7 @@ export default function App() {
 
   const handleStart = async () => {
   setLoading(true);
+  setLoadingIdeas(true);  // ← thêm
   setError("");
   try {
     const res = await api.get({ action: "getIdeas", reviewerId: preview.reviewerId });
@@ -629,10 +631,8 @@ export default function App() {
       setReviewer(preview);
       setIdeas(res.ideas);
       setIsAssigner(res.isAssigner || false);
-
       const savedProgress = loadProgress(preview.reviewerId);
       if (savedProgress && res.ideas.length > 0) {
-        // ← Tìm đúng vị trí theo ideaKey thay vì dùng index cũ
         if (savedProgress.currentIdeaKey) {
           const idx = res.ideas.findIndex(
             idea => `${idea.sheetName}_${idea.rowIndex}` === savedProgress.currentIdeaKey
@@ -644,7 +644,6 @@ export default function App() {
       } else {
         setCurrent(0);
       }
-
       setStep(res.ideas.length === 0 ? "done" : "scoring");
     } else {
       setError(res.error || "Không lấy được dữ liệu");
@@ -653,6 +652,7 @@ export default function App() {
     setError("Lỗi kết nối.");
   }
   setLoading(false);
+  setLoadingIdeas(false);  // ← thêm
 };
 
   const handleAdminUnlock = () => {
@@ -804,7 +804,21 @@ export default function App() {
             style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: "#94a3b8", padding: 4, lineHeight: 1 }}>⚙️</button>
         ) : null}
       </div>
+<style>{`
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner { ... }
 
+  @keyframes shimmer {
+    0% { background-position: -800px 0; }
+    100% { background-position: 800px 0; }
+  }
+  .skeleton {
+    background: linear-gradient(90deg, rgba(255,255,255,0.4) 25%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0.4) 75%);
+    background-size: 800px 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 8px;
+  }
+`}</style>
       {/* ══ LOGIN ══ */}
       {step === "login" && (
         <div style={{ ...S.card, maxWidth: 480 }}>
@@ -851,7 +865,49 @@ export default function App() {
           )}
         </div>
       )}
+{/* ══ SKELETON LOADING ══ */}
+{loadingIdeas && (
+  <>
+    {/* Progress bar skeleton */}
+    <div style={{ width: "100%", maxWidth: 800, marginBottom: 20 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+        <div className="skeleton" style={{ width: 120, height: 14 }} />
+        <div className="skeleton" style={{ width: 80, height: 14 }} />
+      </div>
+      <div className="skeleton" style={{ height: 4, borderRadius: 99 }} />
+    </div>
 
+    {/* Card info skeleton */}
+    <div style={{ ...S.card, background: "rgba(255,255,255,0.75)" }}>
+      <div className="skeleton" style={{ width: "60%", height: 14, marginBottom: 12 }} />
+      <div className="skeleton" style={{ width: "85%", height: 24, marginBottom: 20 }} />
+      <div style={{ height: 1, background: "#bae6fd", margin: "0 0 16px" }} />
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
+        {[1,2,3,4].map(i => (
+          <div key={i} className="skeleton" style={{ height: 60, borderRadius: 8 }} />
+        ))}
+      </div>
+      {[1,2,3,4,5].map(i => (
+        <div key={i} className="skeleton" style={{ height: 70, marginBottom: 10, borderRadius: 8 }} />
+      ))}
+    </div>
+
+    {/* Card scoring skeleton */}
+    <div style={{ ...S.card, background: "rgba(255,255,255,0.75)" }}>
+      <div className="skeleton" style={{ width: 100, height: 14, marginBottom: 24 }} />
+      {[1,2,3,4].map(i => (
+        <div key={i} style={{ marginBottom: 20 }}>
+          <div className="skeleton" style={{ width: "40%", height: 16, marginBottom: 10 }} />
+          <div style={{ display: "flex", gap: 8 }}>
+            {[1,2,3].map(j => (
+              <div key={j} className="skeleton" style={{ flex: 1, height: 44, borderRadius: 8 }} />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </>
+)}
       {/* ══ SCORING ══ */}
       {step === "scoring" && ideas[current] && (() => {
         const idea = ideas[current];
