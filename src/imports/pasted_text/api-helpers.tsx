@@ -230,7 +230,6 @@ const MOCK_IDEAS = [
     goodJob: false, baoVe: false, feedback: "",
   },
 ];
-const [loadingIdeas, setLoadingIdeas] = useState(false);
 
 const mockAPI = {
   // ═══ FIX: luôn dùng DEFAULT_REVIEWERS, không dùng localStorage ═══
@@ -534,6 +533,7 @@ const S: Record<string, any> = {
 
 export default function App() {
   const [step, setStep]             = useState("login");
+  const [loadingIdeas, setLoadingIdeas] = useState(false);
   const [reviewerId, setReviewerId] = useState("");
   const [reviewer, setReviewer]     = useState<any>(null);
   const [ideas, setIdeas]           = useState<any[]>([]);
@@ -781,33 +781,17 @@ export default function App() {
   return (
     <div style={S.page}>
       <style>{`
-      @keyframes spin {
-        to { transform: rotate(360deg); }
-      }
-      .spinner {
-        width: 16px; height: 16px;
-        border: 2.5px solid rgba(255,255,255,0.4);
-        border-top-color: #fff;
-        border-radius: 50%;
-        animation: spin 0.7s linear infinite;
-        display: inline-block;
-        margin-right: 8px;
-        vertical-align: middle;
-      }
-    `}</style>
-      <div style={S.topBar}>
-        <span style={S.logo}>Chấm sáng kiến Hò Yo Ta</span>
-        {reviewer ? (
-          <span style={S.badge}>{reviewer.name} · {reviewer.reviewerId}</span>
-        ) : step === "login" ? (
-          <button title="Quản lý danh sách Mã YD" onClick={() => setStep("admin")}
-            style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: "#94a3b8", padding: 4, lineHeight: 1 }}>⚙️</button>
-        ) : null}
-      </div>
-<style>{`
   @keyframes spin { to { transform: rotate(360deg); } }
-  .spinner { ... }
-
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2.5px solid rgba(255,255,255,0.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: inline-block;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
   @keyframes shimmer {
     0% { background-position: -800px 0; }
     100% { background-position: 800px 0; }
@@ -819,6 +803,15 @@ export default function App() {
     border-radius: 8px;
   }
 `}</style>
+      <div style={S.topBar}>
+        <span style={S.logo}>Chấm sáng kiến Hò Yo Ta</span>
+        {reviewer ? (
+          <span style={S.badge}>{reviewer.name} · {reviewer.reviewerId}</span>
+        ) : step === "login" ? (
+          <button title="Quản lý danh sách Mã YD" onClick={() => setStep("admin")}
+            style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: "#94a3b8", padding: 4, lineHeight: 1 }}>⚙️</button>
+        ) : null}
+      </div>
       {/* ══ LOGIN ══ */}
       {step === "login" && (
         <div style={{ ...S.card, maxWidth: 480 }}>
