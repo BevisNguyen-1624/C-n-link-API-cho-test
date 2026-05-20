@@ -768,6 +768,21 @@ export default function App() {
 
   return (
     <div style={S.page}>
+      <style>{`
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+      .spinner {
+        width: 16px; height: 16px;
+        border: 2.5px solid rgba(255,255,255,0.4);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+        display: inline-block;
+        margin-right: 8px;
+        vertical-align: middle;
+      }
+    `}</style>
       <div style={S.topBar}>
         <span style={S.logo}>Chấm sáng kiến Hò Yo Ta</span>
         {reviewer ? (
@@ -784,7 +799,8 @@ export default function App() {
           <h1 style={{ ...S.h1, textAlign: "center" }}>Chào mừng anh chị ☀️</h1>
           <p style={{ ...S.sub, textAlign: "center" }}>Nhập mã YD để bắt đầu chấm điểm sáng kiến</p>
           <label style={S.label}>Mã YD</label>
-          <input ref={inputRef} style={S.input} placeholder="Mã YD của anh/chị"
+          <input ref={inputRef} style={{ ...S.input, opacity: loading ? 0.6 : 1 }}
+            disabled={loading}
             value={reviewerId}
             onChange={(e) => { setReviewerId(e.target.value); setPreview(null); setError(""); }}
             onKeyDown={(e) => e.key === "Enter" && handleVerify()}
@@ -804,7 +820,7 @@ export default function App() {
             <button style={S.btnPrimary} onClick={handleVerify} disabled={loading || !reviewerId.trim()}
               onMouseOver={(e) => ((e.target as HTMLButtonElement).style.opacity = "0.85")}
               onMouseOut={(e) => ((e.target as HTMLButtonElement).style.opacity = "1")}>
-              {loading ? "Đang xác nhận..." : "Xác nhận mã →"}
+              {loading ? <><span className="spinner"/><span>Đang xác nhận...</span></> : "Xác nhận mã →"}
             </button>
           ) : (
             <>
