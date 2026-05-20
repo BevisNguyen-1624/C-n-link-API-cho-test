@@ -813,7 +813,7 @@ export default function App() {
         ) : null}
       </div>
       {/* ══ LOGIN ══ */}
-      {step === "login" && (
+      {step === "login" && !loadingIdeas && (
         <div style={{ ...S.card, maxWidth: 480 }}>
           <h1 style={{ ...S.h1, textAlign: "center" }}>Chào mừng anh chị ☀️</h1>
           <p style={{ ...S.sub, textAlign: "center" }}>Nhập mã YD để bắt đầu chấm điểm sáng kiến</p>
