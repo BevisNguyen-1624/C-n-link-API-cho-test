@@ -856,9 +856,7 @@ export default function App() {
     <span>{pct}% hoàn thành</span>
   </div>
 
-  {/* Progress bar + boat */}
   <div style={{ position: "relative", marginTop: 16 }}>
-    {/* Boat sticker */}
     <img
       src={boatImage}
       style={{
@@ -873,12 +871,11 @@ export default function App() {
         zIndex: 2,
       }}
     />
-    {/* Track */}
     <div style={{ ...S.progressBar, marginTop: 0 }}>
       <div style={S.progressFill(pct)} />
     </div>
-              <div style={S.progressBar}><div style={S.progressFill(pct)} /></div>
-            </div>
+  </div>
+</div>
             <div style={S.card}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
                 <div>
