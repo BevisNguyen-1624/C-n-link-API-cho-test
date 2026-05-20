@@ -864,7 +864,7 @@ export default function App() {
     <span>{pct}% hoàn thành</span>
   </div>
 
-  <div style={{ position: "relative", marginTop: 16 }}>
+  {/*<div style={{ position: "relative", marginTop: 16 }}>
     <img
   src={boatImage}
   style={{
@@ -878,13 +878,12 @@ export default function App() {
     transition: "left 0.4s ease, transform 0.4s ease",
     pointerEvents: "none",
     zIndex: 2,
-  }}
+  */}}
 />
     <div style={{ ...S.progressBar, marginTop: 0 }}>
       <div style={S.progressFill(pct)} />
     </div>
   </div>
-</div>
             <div style={S.card}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
                 <div>
