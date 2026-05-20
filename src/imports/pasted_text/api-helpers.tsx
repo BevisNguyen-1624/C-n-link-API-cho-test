@@ -866,19 +866,20 @@ export default function App() {
 
   <div style={{ position: "relative", marginTop: 16 }}>
     <img
-      src={boatImage}
-      style={{
-        position: "absolute",
-        bottom: -40,
-        left: `clamp(0%, calc(${pct}% - 20px), calc(100% - 36px))`,
-        width: 100,
-        height: 100,
-        objectFit: "contain",
-        transition: "left 0.4s ease",
-        pointerEvents: "none",
-        zIndex: 2,
-      }}
-    />
+  src={boatImage}
+  style={{
+    position: "absolute",
+    bottom: -50,
+    left: `${pct}%`,
+    transform: `translateX(-${pct * 0.8}px)`,   // ← bù trừ theo %
+    width: 120,
+    height: 120,
+    objectFit: "contain",
+    transition: "left 0.4s ease, transform 0.4s ease",
+    pointerEvents: "none",
+    zIndex: 2,
+  }}
+/>
     <div style={{ ...S.progressBar, marginTop: 0 }}>
       <div style={S.progressFill(pct)} />
     </div>
