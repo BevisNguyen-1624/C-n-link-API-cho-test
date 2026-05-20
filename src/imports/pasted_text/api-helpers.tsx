@@ -548,6 +548,7 @@ export default function App() {
   const [submitting, setSubmitting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isAssigner, setIsAssigner] = useState(false);
+  const [mySheetUrl, setMySheetUrl] = useState<string | null>(null);
 
   const [unassignedIdeas, setUnassignedIdeas] = useState<any[]>([]);
   const [myAssignees, setMyAssignees] = useState<string[]>([]);
@@ -630,6 +631,7 @@ export default function App() {
     if (res.ok) {
       setReviewer(preview);
       setIdeas(res.ideas);
+      if (res.sheetUrl) setMySheetUrl(res.sheetUrl);
       setIsAssigner(res.isAssigner || false);
       const savedProgress = loadProgress(preview.reviewerId);
       if (savedProgress && res.ideas.length > 0) {
@@ -1221,6 +1223,12 @@ export default function App() {
             <a href={PROGRESS_TRACKING_URL} target="_blank" rel="noreferrer"
               style={{ ...S.btnPrimary, padding: "12px 28px", textDecoration: "none", display: "inline-block" }}>
               📊 Theo dõi tiến độ chấm
+              {mySheetUrl && (
+  <a href={mySheetUrl} target="_blank" rel="noreferrer"
+    style={{ ...S.btnSecondary, padding: "12px 28px", textDecoration: "none", display: "inline-block" }}>
+    📄 Xem sheet chấm của tôi
+  </a>
+)}
             </a>
           </div>
         </div>
