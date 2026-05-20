@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-const API_URL = "https://script.google.com/macros/s/AKfycbxEG31ZR8LYvz1wnadf2gJ3-K7kpuCKGQUxoOLI5v_PX8F590q13sDMhJrmdppyMTg/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzOaUK9hvlncHVKvdocO46C3CrXuj9aXuCL3KKxSIVxycH0uis5R_79VvEzi67kBJA/exec";
 const USE_MOCK = false;
 const ADMIN_PIN = "1234";
 const LS_KEY = "hoYoTa_reviewers";
