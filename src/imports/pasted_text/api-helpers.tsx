@@ -425,7 +425,7 @@ const S: Record<string, any> = {
   card: {
     width: "100%",
     maxWidth: 800,
-    background: "rgba(255, 255, 255, 0.5)",
+    background: "rgba(255, 255, 255, 0.7)",
     backdropFilter: "blur(12px)",
     WebkitBackdropFilter: "blur(12px)",
     border: "1px solid #bae6fd",
@@ -510,7 +510,7 @@ const S: Record<string, any> = {
   width: "100%", 
   maxWidth: 800, 
   marginBottom: 20,
-  background: "rgba(255,255,255,0.5)",
+  background: "rgba(255,255,255,0.7)",
   backdropFilter: "blur(8px)",
   borderRadius: 10,
   padding: "8px 12px",
