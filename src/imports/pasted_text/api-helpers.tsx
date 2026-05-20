@@ -869,7 +869,7 @@ export default function App() {
       src={boatImage}
       style={{
         position: "absolute",
-        bottom: 2,
+        bottom: -34,
         left: `clamp(0%, calc(${pct}% - 36px), calc(100% - 36px))`,
         width: 72,
         height: 72,
