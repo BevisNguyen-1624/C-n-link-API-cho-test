@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import bgImage from "../KV_HÒ_YO_TA-01.jpeg";
-
+import boatImage from "../boat.png";
 
 const API_URL = "https://script.google.com/macros/s/AKfycbw7q6BnJ0ymPiTHqQbJuQSI3ensOoec_ENOadSEH4rjjVHw42z-ANk2WqubC0uWA5s/exec";
 const USE_MOCK = false;
@@ -850,10 +850,33 @@ export default function App() {
         return (
           <>
             <div style={S.progress}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#64748b", fontWeight: 700 }}>
-                <span>SÁNG KIẾN {current + 1} / {ideas.length}</span>
-                <span>{pct}% hoàn thành</span>
-              </div>
+  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#64748b", fontWeight: 700,
+    textShadow: "0 0 6px #fff, 0 0 6px #fff, 0 0 6px #fff" }}>
+    <span>SÁNG KIẾN {current + 1} / {ideas.length}</span>
+    <span>{pct}% hoàn thành</span>
+  </div>
+
+  {/* Progress bar + boat */}
+  <div style={{ position: "relative", marginTop: 16 }}>
+    {/* Boat sticker */}
+    <img
+      src={boatImage}
+      style={{
+        position: "absolute",
+        bottom: 2,
+        left: `clamp(0%, calc(${pct}% - 36px), calc(100% - 36px))`,
+        width: 72,
+        height: 72,
+        objectFit: "contain",
+        transition: "left 0.4s ease",
+        pointerEvents: "none",
+        zIndex: 2,
+      }}
+    />
+    {/* Track */}
+    <div style={{ ...S.progressBar, marginTop: 0 }}>
+      <div style={S.progressFill(pct)} />
+    </div>
               <div style={S.progressBar}><div style={S.progressFill(pct)} /></div>
             </div>
             <div style={S.card}>
