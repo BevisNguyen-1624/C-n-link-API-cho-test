@@ -861,7 +861,8 @@ export default function App() {
         </div>
       )}
 {/* ══ SKELETON LOADING ══ */}
-{loadingIdeas && (
+{loadingIdeas && preview?.pendingCount > 0 && (
+
   <>
     {/* Progress bar skeleton */}
     <div style={{ width: "100%", maxWidth: 800, marginBottom: 20 }}>
@@ -902,6 +903,13 @@ export default function App() {
       ))}
     </div>
   </>
+)}
+{/* ══ SIMPLE LOADING — khi đã hoàn tất ══ */}
+{loadingIdeas && (preview?.pendingCount === 0 || !preview) && (
+  <div style={{ ...S.card, maxWidth: 480, textAlign: "center" as const, padding: "48px 40px" }}>
+    <span className="spinner" style={{ width: 24, height: 24, borderWidth: 3, margin: "0 auto 16px", display: "block" }} />
+    <p style={{ color: "#64748b", fontSize: 14, fontWeight: 600 }}>Đang tải...</p>
+  </div>
 )}
       {/* ══ SCORING ══ */}
       {step === "scoring" && ideas[current] && (() => {
