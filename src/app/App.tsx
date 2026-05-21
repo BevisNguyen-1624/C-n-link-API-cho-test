@@ -13,6 +13,3 @@ export default function App() {
     </Routes>
   );
 } 
-export default function App() {
-  return <ScoringApp />;
-}
