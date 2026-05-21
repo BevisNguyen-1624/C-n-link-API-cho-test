@@ -1215,7 +1215,7 @@ export default function App() {
     <p style={{ color: "#64748b", fontSize: 14, margin: "8px 0 28px" }}>
       {ideas.length > 0 ? `Đã chấm ${ideas.length} sáng kiến. Kết quả đã được lưu.` : "Hiện không có sáng kiến nào cần chấm."}
     </p>
-    <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" as const }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "center" }}>
       <button style={{ ...S.btnSecondary, padding: "12px 28px" }}
         onClick={() => { setStep("login"); setPreview(null); setReviewerId(""); setIdeas([]); setReviewer(null); setAssignmentStats({}); setSelectedIdeas([]); setSelectedAssignee(""); }}>
         ← Quay lại trang chủ
