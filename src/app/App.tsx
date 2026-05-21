@@ -1,4 +1,4 @@
-import ScoringApp from "../imports/pasted_text/api-helpers";
+import ScoringPage from "../imports/pasted_text/api-helpers";
 import { Routes, Route } from "react-router-dom";
 import ScoringPage from "./pages/ScoringPage";   // trang chấm điểm hiện tại
 import TrackingPage from "./pages/TrackingPage"; // trang theo dõi tiến độ
