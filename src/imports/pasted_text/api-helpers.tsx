@@ -1224,14 +1224,12 @@ export default function App() {
         style={{ ...S.btnPrimary, padding: "12px 28px", textDecoration: "none", display: "inline-block" }}>
         📊 Theo dõi tiến độ chấm
       </a>
-    </div>
-    {mySheetUrl && (
-      <div style={{ marginTop: 12 }}>
+      {mySheetUrl && (
         <a href={mySheetUrl} target="_blank" rel="noreferrer"
           style={{ ...S.btnSecondary, padding: "12px 28px", textDecoration: "none", display: "inline-block" }}>
           📄 Xem sheet chấm của tôi
         </a>
-      </div>
-    )}
+      )}
+    </div>
   </div>
 )}
