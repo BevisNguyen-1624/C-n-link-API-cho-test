@@ -1,7 +1,6 @@
-// api/proxy.ts
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 
-const GAS_URL = "https://script.google.com/a/macros/yody.vn/s/AKfycbyK9kfonWNu6bwXPn3A9etQ3Zh252NlDlkHHNmGTvrgRLUrlr0A1EUoC5d3-ZwK0Q_4/exec";
+const GAS_URL = "https://script.google.com/a/macros/yody.vn/s/AKfycby2IKa1UBLfR5Jv4nnE19rbe01_PG4qhSpZGpQfECFcPyrrclZTx5WSz-7wT_EV9HY8/exec";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -11,22 +10,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === "OPTIONS") return res.status(200).end();
 
   try {
-    let gasRes;
+    let params: Record<string, string> = {};
 
     if (req.method === "GET") {
-      const params = new URLSearchParams(req.query as Record<string, string>);
-      gasRes = await fetch(`${GAS_URL}?${params}`);
+      params = req.query as Record<string, string>;
     } else {
-      gasRes = await fetch(GAS_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(req.body),
-      });
+      // POST → flatten body thành GET params
+      const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
+      params = Object.fromEntries(
+        Object.entries(body).map(([k, v]) => [k, String(v)])
+      );
     }
 
-    const data = await gasRes.json();
-    return res.status(200).json(data);
+    const url = `${GAS_URL}?${new URLSearchParams(params)}`;
+    const gasRes = await fetch(url, { redirect: "follow" });
+    const text = await gasRes.text();
+
+    try {
+      return res.status(200).json(JSON.parse(text));
+    } catch {
+      console.error("GAS non-JSON:", text.slice(0, 300));
+      return res.status(502).json({ ok: false, error: "GAS returned non-JSON" });
+    }
+
   } catch (err) {
+    console.error("Proxy error:", err);
     return res.status(500).json({ ok: false, error: "Proxy error" });
   }
 }
