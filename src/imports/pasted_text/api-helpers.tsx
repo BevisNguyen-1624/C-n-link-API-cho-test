@@ -841,7 +841,7 @@ export default function App() {
             <button style={S.btnPrimary} onClick={handleVerify} disabled={loading || !reviewerId.trim()}
               onMouseOver={(e) => ((e.target as HTMLButtonElement).style.opacity = "0.85")}
               onMouseOut={(e) => ((e.target as HTMLButtonElement).style.opacity = "1")}>
-              {loading ? <><span className="spinner"/><span>Đang xác nhận...</span></> : "Xác nhận mã →"}
+              {loading ? <><span className="spinner"/><span>Anh chị đợi chút nhé...</span></> : "Xác nhận mã →"}
             </button>
           ) : (
             <>
