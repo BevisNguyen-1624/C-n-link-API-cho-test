@@ -12,6 +12,7 @@ const LS_KEY_PROGRESS = "hoYoTa_progress";
 const LS_KEY_COMPLETED = "hoYoTa_completed";
 const PROGRESS_TRACKING_URL = "https://docs.google.com/spreadsheets/d/1oHkOgPVjNrvt8-YzDsp1dWOZqaNKdklh6BTFKx6nksI/edit?gid=2068815285#gid=2068815285";
 
+
 // ═══ DANH SÁCH CỐ ĐỊNH — không phụ thuộc localStorage ═══
 const DEFAULT_REVIEWERS = [
   { reviewerId: "YD0001",  name: "Nguyễn Việt Hòa" },
