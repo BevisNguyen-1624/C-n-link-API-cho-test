@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import bgImage from "../KV_HÒ_YO_TA-01.jpeg";
 import boatImage from "../boat.png";
 
-const API_URL = "/api/proxy";
+const API_URL = "/api/proxy.ts";
 const USE_MOCK = false;
 const ADMIN_PIN = "1234";
 const LS_KEY = "hoYoTa_reviewers";
