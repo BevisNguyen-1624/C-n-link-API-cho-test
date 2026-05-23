@@ -31,9 +31,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (!reviewer) return res.json({ ok: false, error: "Mã không hợp lệ" });
 
       // Lấy ideas theo assignedSheets
-      const filter = reviewer.assignedSheets?.length > 0
-        ? { sheetName: { $in: reviewer.assignedSheets } }
-        : {};
+      const assignedWithPrefix = reviewer.assignedSheets?.length > 0
+  ? reviewer.assignedSheets.map((s: string) => `T5. ${s}`)
+  : [];
+      const filter = assignedWithPrefix.length > 0
+  ? { sheetName: { $in: assignedWithPrefix } }
+  : {};
       const allIdeas = await db.collection("ideas").find(filter).toArray();
 
       // Lọc ra ideas người này chưa chấm
