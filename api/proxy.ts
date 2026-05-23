@@ -65,39 +65,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           scoreN: "", scoreO: "", scoreP: "", scoreQ: "",
           goodJob: false, baoVe: false, feedback: "",
         }));
-        if (action === "verifyReviewer") {
-  const reviewerId = (req.query.reviewerId as string)?.trim().toUpperCase();
-  const reviewer = await db.collection("reviewers").findOne({
-    reviewerId: { $regex: new RegExp(`^${reviewerId}$`, "i") }
-  });
-  if (!reviewer) return res.json({ ok: false, error: "Mã không hợp lệ" });
-
-  const filter = reviewer.assignedSheets?.length > 0
-    ? { sheetName: { $in: reviewer.assignedSheets } }
-    : {};
-  
-  const allIdeas = await db.collection("ideas").find(filter).toArray();
-  const myScores = await db.collection("scores")
-    .find({ reviewerId: reviewer.reviewerId })
-    .toArray();
-
-  // ── DEBUG ──
-  const sampleIdea = allIdeas[0];
-  const sampleScore = myScores[0];
-  return res.json({
-    ok: false,
-    debug: {
-      totalIdeas: allIdeas.length,
-      totalMyScores: myScores.length,
-      sampleIdeaId: sampleIdea?._id?.toString(),
-      sampleIdeaIdType: typeof sampleIdea?._id,
-      sampleScoreIdeaId: sampleScore?.ideaId,
-      sampleScoreIdeaIdType: typeof sampleScore?.ideaId,
-      assignedSheets: reviewer.assignedSheets,
-      sampleSheetName: sampleIdea?.sheetName,
-    }
-  });
-  // ── HẾT DEBUG ──
+        
 
       // Tính sheetUrl nếu có
       const sheetUrl = reviewer.sheetUrls?.[reviewer.assignedSheets?.[0]] || null;
@@ -202,3 +170,36 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ ok: false, error: err.message });
   }
 }
+if (action === "verifyReviewer") {
+  const reviewerId = (req.query.reviewerId as string)?.trim().toUpperCase();
+  const reviewer = await db.collection("reviewers").findOne({
+    reviewerId: { $regex: new RegExp(`^${reviewerId}$`, "i") }
+  });
+  if (!reviewer) return res.json({ ok: false, error: "Mã không hợp lệ" });
+
+  const filter = reviewer.assignedSheets?.length > 0
+    ? { sheetName: { $in: reviewer.assignedSheets } }
+    : {};
+  
+  const allIdeas = await db.collection("ideas").find(filter).toArray();
+  const myScores = await db.collection("scores")
+    .find({ reviewerId: reviewer.reviewerId })
+    .toArray();
+
+  // ── DEBUG ──
+  const sampleIdea = allIdeas[0];
+  const sampleScore = myScores[0];
+  return res.json({
+    ok: false,
+    debug: {
+      totalIdeas: allIdeas.length,
+      totalMyScores: myScores.length,
+      sampleIdeaId: sampleIdea?._id?.toString(),
+      sampleIdeaIdType: typeof sampleIdea?._id,
+      sampleScoreIdeaId: sampleScore?.ideaId,
+      sampleScoreIdeaIdType: typeof sampleScore?.ideaId,
+      assignedSheets: reviewer.assignedSheets,
+      sampleSheetName: sampleIdea?.sheetName,
+    }
+  });
+  // ── HẾT DEBUG ──
