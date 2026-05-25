@@ -395,7 +395,6 @@ const S: Record<string, any> = {
     flexDirection: "column",
     justifyContent: "center"
     alignItems: "center",
-    padding: "0 16px 60px",
   },
   topBar: {
     width: "100%",
