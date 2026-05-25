@@ -393,8 +393,8 @@ const S: Record<string, any> = {
     color: "#0f172a",
     display: "flex",
     flexDirection: "column",
-    alignItems: "center",
     justifyContent: "center"
+    alignItems: "center",
     padding: "0 16px 60px",
   },
   topBar: {
