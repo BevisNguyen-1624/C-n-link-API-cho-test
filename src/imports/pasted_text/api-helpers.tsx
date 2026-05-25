@@ -846,10 +846,18 @@ export default function App() {
             </button>
           ) : (
             <>
-              <button style={S.btnPrimary} onClick={handleStart} disabled={loading}
+              <button style={S.btnPrimary} 
+              onClick={() => preview?.pendingCount === 0
+  ? window.open(PROGRESS_TRACKING_URL, "_blank")
+  : handleStart()
+} disabled={loading}
                 onMouseOver={(e) => ((e.target as HTMLButtonElement).style.opacity = "0.85")}
                 onMouseOut={(e) => ((e.target as HTMLButtonElement).style.opacity = "1")}>
-                {loading ? "Đang tải sáng kiến..." : "Bắt đầu chấm điểm →"}
+                {loading
+                ? "Đang tải sáng kiến..."
+                : preview?.pendingCount === 0
+                ? "Chuyển tới báo cáo →"
+                : "Bắt đầu chấm điểm →"}
               </button>
               {preview.isAssigner && (
                 <button style={{ ...S.btnSecondary, width: "100%", marginTop: 12, padding: "12px" }}
