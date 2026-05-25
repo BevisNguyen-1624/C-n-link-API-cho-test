@@ -2,11 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import bgImage from "../KV_HÒ_YO_TA-01.jpeg";
 import boatImage from "../boat.png";
 
-<<<<<<< HEAD
 const API_URL = "https://script.google.com/macros/s/AKfycbwoKPWp6RHlNJOTvintXzB6WKTG92dxR_U_DyNBvnHvQ2EKh3rnDdLaIw0vxu1xLw/exec";
-=======
-const API_URL = "/api/proxy.ts";
->>>>>>> a9b4f4f241ef13d64514196ce74647597842bc60
 const USE_MOCK = false;
 const ADMIN_PIN = "1234";
 const LS_KEY = "hoYoTa_reviewers";
@@ -15,10 +11,6 @@ const LS_KEY_ASSIGNMENTS = "hoYoTa_assignments";
 const LS_KEY_PROGRESS = "hoYoTa_progress";
 const LS_KEY_COMPLETED = "hoYoTa_completed";
 const PROGRESS_TRACKING_URL = "https://docs.google.com/spreadsheets/d/1NCqI0No-6-r5Ou1ZfrVc9ndGcXVcPih1D2hRoeMZ1tQ/edit?gid=954865482#gid=954865482";
-<<<<<<< HEAD
-=======
-
->>>>>>> a9b4f4f241ef13d64514196ce74647597842bc60
 
 // ═══ DANH SÁCH CỐ ĐỊNH — không phụ thuộc localStorage ═══
 const DEFAULT_REVIEWERS = [
