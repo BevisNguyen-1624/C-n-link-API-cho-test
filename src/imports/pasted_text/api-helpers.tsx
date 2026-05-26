@@ -796,11 +796,11 @@ try {
     setSaveStatus("error");
     setTimeout(() => setSaveStatus("idle"), 5000); // ✅ thêm dòng này
     console.error("❌ Lưu thất bại:", res.error);
-  }
 } catch {
   setSaveStatus("error");
   setTimeout(() => setSaveStatus("idle"), 5000);   // ✅ thêm dòng này
   console.error("❌ Lỗi kết nối khi lưu ngầm");
+}
 }
 
 
