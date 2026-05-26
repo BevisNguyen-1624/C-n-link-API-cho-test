@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import bgImage from "../KV_HÒ_YO_TA-01.jpeg";
 import boatImage from "../boat.png";
 
-const API_URL = "https://script.google.com/macros/s/AKfycbxRvhd_c-S2PD_rms_OYDSyDblayjnkw1Xq21zmTVupiYb4shJDyy1oLbQRm-lFc1c/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxRCUSSbubB5Zivnhe47SuoTHAtpa6I8blbqXqN2sPgg69Zt3LIby8JUmzb6IOnSGM/exec";
 const USE_MOCK = false;
 const ADMIN_PIN = "1234";
 const LS_KEY = "hoYoTa_reviewers";
