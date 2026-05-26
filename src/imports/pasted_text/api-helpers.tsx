@@ -544,7 +544,7 @@ export default function App() {
   const [loading, setLoading]       = useState(false);
   const [error, setError]           = useState("");
   const [preview, setPreview]       = useState<any>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null); const topRef = useRef<HTMLDivElement>(null);
   const [mySheetUrl, setMySheetUrl] = useState<string | null>(null);
 
   const [unassignedIdeas, setUnassignedIdeas] = useState<any[]>([]);
@@ -582,7 +582,7 @@ export default function App() {
 
   useEffect(() => {
   if (step === "scoring") {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 }, [current, step]);
 
@@ -833,7 +833,7 @@ try {
     border-radius: 8px;
   }
 `}</style>
-      <div style={S.topBar}>
+      <div ref={topRef} style={S.topBar}>
         <span style={S.logo}>Chấm sáng kiến Hò Yo Ta</span>
         {reviewer ? (
   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
