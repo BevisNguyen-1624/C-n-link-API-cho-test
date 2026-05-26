@@ -582,7 +582,10 @@ export default function App() {
 
   useEffect(() => {
   if (step === "scoring") {
-    topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    requestAnimationFrame(() => {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    });
   }
 }, [current, step]);
 
