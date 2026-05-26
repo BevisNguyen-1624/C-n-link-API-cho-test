@@ -792,10 +792,11 @@ try {
   if (res.ok) {
     setSaveStatus("saved");
     setTimeout(() => setSaveStatus("idle"), 3000); // ✅ thêm dòng này
-  } else {
+    } else {
     setSaveStatus("error");
-    setTimeout(() => setSaveStatus("idle"), 5000); // ✅ thêm dòng này
+    setTimeout(() => setSaveStatus("idle"), 5000);
     console.error("❌ Lưu thất bại:", res.error);
+  }           // ← thêm dấu } đóng else
 } catch {
   setSaveStatus("error");
   setTimeout(() => setSaveStatus("idle"), 5000);   // ✅ thêm dòng này
