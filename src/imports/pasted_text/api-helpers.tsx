@@ -566,7 +566,7 @@ export default function App() {
   const [newAssignerYD, setNewAssignerYD] = useState("");
   const [selectedAdminAssignees, setSelectedAdminAssignees] = useState<string[]>([]);
   const [canXet, setCanXet] = useState(false);
-
+  const [saveStatus, setSaveStatus] = useState<"idle"|"saving"|"saved"|"error">("idle");
   useEffect(() => {
     if (!ideas[current]) return;
     const idea = ideas[current];
@@ -762,25 +762,47 @@ export default function App() {
   const pct = ideas.length ? Math.round((current / ideas.length) * 100) : 0;
 
   const handleSubmitScore = async () => {
-    if (!allScored) { setError("Vui lòng chấm đủ 4 tiêu chí."); return; }
-    setSubmitting(true); setError("");
-    const idea = ideas[current];
-    try {
-      const res = await api.post({
-        action: "submitScore",
-        ideaId:       idea.id,
-        sheetName: idea.sheetName, rowIndex: idea.rowIndex,
-        reviewerId: reviewer.reviewerId,
-        scoreN: scores.scoreN, scoreO: scores.scoreO, scoreP: scores.scoreP, scoreQ: scores.scoreQ,
-        goodJob, baoVe, feedback, reviewerName: reviewer.name, canXet,
-      });
-      if (res.ok) {
-        if (current + 1 >= ideas.length) { clearProgress(reviewer.reviewerId); setStep("done"); }
-        else { setCurrent((c) => c + 1); window.scrollTo({ top: 0, behavior: "smooth" }); }
-      } else { setError(res.error || "Lỗi khi lưu điểm."); }
-    } catch { setError("Lỗi kết nối khi lưu."); }
-    setSubmitting(false);
+  if (!allScored) { setError("Vui lòng chấm đủ 4 tiêu chí."); return; }
+  setError("");
+
+  const idea = ideas[current];
+  const postBody = {
+    action: "submitScore",
+    ideaId:       idea.id,
+    sheetName:    idea.sheetName,
+    rowIndex:     idea.rowIndex,
+    reviewerId:   reviewer.reviewerId,
+    scoreN: scores.scoreN, scoreO: scores.scoreO,
+    scoreP: scores.scoreP, scoreQ: scores.scoreQ,
+    goodJob, baoVe, canXet, feedback,
+    reviewerName: reviewer.name,
   };
+
+  // ── Chuyển trang NGAY, không chờ GAS ──
+  setSaveStatus("saving");
+  if (current + 1 >= ideas.length) {
+    clearProgress(reviewer.reviewerId);
+    setStep("done");
+  } else {
+    setCurrent(c => c + 1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // ── Lưu ngầm phía sau ──
+  try {
+    const res = await api.post(postBody);
+    if (res.ok) {
+      setSaveStatus("saved");
+    } else {
+      setSaveStatus("error");
+      console.error("❌ Lưu thất bại:", res.error);
+    }
+  } catch {
+    setSaveStatus("error");
+    console.error("❌ Lỗi kết nối khi lưu ngầm");
+  }
+};
+
 
   return (
     <div style={S.page}>
@@ -810,11 +832,25 @@ export default function App() {
       <div style={S.topBar}>
         <span style={S.logo}>Chấm sáng kiến Hò Yo Ta</span>
         {reviewer ? (
-          <span style={S.badge}>{reviewer.name} · {reviewer.reviewerId}</span>
-        ) : step === "login" ? (
-          <button title="Quản lý danh sách Mã YD" onClick={() => setStep("admin")}
-            style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: "#94a3b8", padding: 4, lineHeight: 1 }}>⚙️</button>
-        ) : null}
+  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+    {saveStatus === "saving" && (
+      <span style={{ fontSize: 11, color: "#64748b", fontWeight: 700 }}>
+        <span className="spinner" style={{ width: 10, height: 10, borderWidth: 2 }} />
+        Đang lưu...
+      </span>
+    )}
+    {saveStatus === "saved" && (
+      <span style={{ fontSize: 11, color: "#16a34a", fontWeight: 700 }}>✓ Đã lưu</span>
+    )}
+    {saveStatus === "error" && (
+      <span style={{ fontSize: 11, color: "#ef4444", fontWeight: 700 }}>⚠ Lưu thất bại</span>
+    )}
+    <span style={S.badge}>{reviewer.name} · {reviewer.reviewerId}</span>
+  </div>
+) : step === "login" ? (
+  <button title="Quản lý danh sách Mã YD" onClick={() => setStep("admin")}
+    style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: "#94a3b8", padding: 4, lineHeight: 1 }}>⚙️</button>
+) : null}
       </div>
       {/* ══ LOGIN ══ */}
       {step === "login" && !loadingIdeas && (
@@ -1041,10 +1077,13 @@ export default function App() {
   </div>
 </div>
               {error && <div style={S.error}>{error}</div>}
-              <button style={{ ...S.btnPrimary, opacity: (!allScored || submitting) ? 0.4 : 1 }}
-                onClick={handleSubmitScore} disabled={!allScored || submitting}>
-                {submitting ? "Đang lưu..." : current + 1 >= ideas.length ? "Lưu & Hoàn tất ✓" : `Lưu & Chuyển sang sáng kiến ${current + 2} →`}
-              </button>
+              <button
+  style={{ ...S.btnPrimary, opacity: !allScored ? 0.4 : 1 }}
+  onClick={handleSubmitScore}
+  disabled={!allScored}
+>
+  {current + 1 >= ideas.length ? "Lưu & Hoàn tất ✓" : `Lưu & Chuyển sang sáng kiến ${current + 2} →`}
+</button>
             </div>
           </>
         );
