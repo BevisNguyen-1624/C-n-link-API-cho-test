@@ -787,11 +787,6 @@ export default function App() {
   }
 
   // ── Lưu ngầm phía sau ──
-  try {
-    const res = await api.post(postBody);
-    if (res.ok) {
-      setSaveStatus("saved");
-      // ── Lưu ngầm phía sau ──
 try {
   const res = await api.post(postBody);
   if (res.ok) {
@@ -807,15 +802,6 @@ try {
   setTimeout(() => setSaveStatus("idle"), 5000);   // ✅ thêm dòng này
   console.error("❌ Lỗi kết nối khi lưu ngầm");
 }
-    } else {
-      setSaveStatus("error");
-      console.error("❌ Lưu thất bại:", res.error);
-    }
-  } catch {
-    setSaveStatus("error");
-    console.error("❌ Lỗi kết nối khi lưu ngầm");
-  }
-};
 
 
   return (
