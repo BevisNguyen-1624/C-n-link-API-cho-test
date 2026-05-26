@@ -10,7 +10,7 @@ const LS_KEY_ASSIGNERS = "hoYoTa_assigners";
 const LS_KEY_ASSIGNMENTS = "hoYoTa_assignments";
 const LS_KEY_PROGRESS = "hoYoTa_progress";
 const LS_KEY_COMPLETED = "hoYoTa_completed";
-const PROGRESS_TRACKING_URL = "https://docs.google.com/spreadsheets/d/1NCqI0No-6-r5Ou1ZfrVc9ndGcXVcPih1D2hRoeMZ1tQ/edit?gid=954865482#gid=954865482";
+const PROGRESS_TRACKING_URL = "https://docs.google.com/spreadsheets/d/1NCqI0No-6-r5Ou1ZfrVc9ndGcXVcPih1D2hRoeMZ1tQ/edit?gid=709116352#gid=709116352";
 
 // ═══ DANH SÁCH CỐ ĐỊNH — không phụ thuộc localStorage ═══
 const DEFAULT_REVIEWERS = [
