@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import bgImage from "../KV_HÒ_YO_TA-01.jpeg";
 import boatImage from "../boat.png";
 
-const API_URL = "https://script.google.com/macros/s/AKfycbxi3jCYSmT_mCPjMUPGg_o_n17q_JVxx5E0sEVYNnkfJx6j-Eu05hB6ap1UYpKATPA/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxVdpwUeEAGDMbeAwH6kmDSdIUm1T6-HOco3KZL_5Hu-GSUV-Boqv5tRUVmgcKxgYU/exec";
 const USE_MOCK = false;
 const ADMIN_PIN = "1234";
 const LS_KEY = "hoYoTa_reviewers";
@@ -565,6 +565,7 @@ export default function App() {
   const [adminTab, setAdminTab]           = useState<"reviewers" | "assigners">("reviewers");
   const [newAssignerYD, setNewAssignerYD] = useState("");
   const [selectedAdminAssignees, setSelectedAdminAssignees] = useState<string[]>([]);
+  const [canXet, setCanXet] = useState(false);
 
   useEffect(() => {
     if (!ideas[current]) return;
@@ -578,6 +579,7 @@ export default function App() {
     setGoodJob(idea.goodJob || false);
     setBaoVe(idea.baoVe || false);
     setFeedback(idea.feedback || "");
+    setCanXet(idea.canXet || false);
   }, [current, ideas]);
 
   useEffect(() => {
@@ -590,7 +592,7 @@ export default function App() {
     reviewerId: reviewer.reviewerId,
     currentIndex: current,
     currentIdeaKey: `${idea.sheetName}_${idea.rowIndex}`,
-    scores: { ...scores, goodJob, baoVe, feedback },
+    scores: { ...scores, goodJob, baoVe, canXet, feedback },
     savedAt: new Date().toISOString(),
   };
   saveProgress(progress);
@@ -770,7 +772,7 @@ export default function App() {
         sheetName: idea.sheetName, rowIndex: idea.rowIndex,
         reviewerId: reviewer.reviewerId,
         scoreN: scores.scoreN, scoreO: scores.scoreO, scoreP: scores.scoreP, scoreQ: scores.scoreQ,
-        goodJob, baoVe, feedback, reviewerName: reviewer.name,
+        goodJob, baoVe, feedback, reviewerName: reviewer.name, canXet,
       });
       if (res.ok) {
         if (current + 1 >= ideas.length) { clearProgress(reviewer.reviewerId); setStep("done"); }
