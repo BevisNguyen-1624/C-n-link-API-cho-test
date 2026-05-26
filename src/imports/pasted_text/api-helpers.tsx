@@ -544,9 +544,7 @@ export default function App() {
   const [loading, setLoading]       = useState(false);
   const [error, setError]           = useState("");
   const [preview, setPreview]       = useState<any>(null);
-  const [submitting, setSubmitting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [isAssigner, setIsAssigner] = useState(false);
   const [mySheetUrl, setMySheetUrl] = useState<string | null>(null);
 
   const [unassignedIdeas, setUnassignedIdeas] = useState<any[]>([]);
@@ -596,7 +594,7 @@ export default function App() {
     savedAt: new Date().toISOString(),
   };
   saveProgress(progress);
-}, [scores, goodJob, baoVe, feedback, current, reviewer, step, ideas]);
+}, [scores, goodJob, baoVe, canXet, feedback, current, reviewer, step, ideas]);
 
   const totalScore = CRITERIA.reduce((s, c) => s + (scores[c.key] ?? 0), 0);
   const allScored  = CRITERIA.every((c) => scores[c.key] !== null && scores[c.key] !== undefined);
@@ -793,6 +791,22 @@ export default function App() {
     const res = await api.post(postBody);
     if (res.ok) {
       setSaveStatus("saved");
+      // ── Lưu ngầm phía sau ──
+try {
+  const res = await api.post(postBody);
+  if (res.ok) {
+    setSaveStatus("saved");
+    setTimeout(() => setSaveStatus("idle"), 3000); // ✅ thêm dòng này
+  } else {
+    setSaveStatus("error");
+    setTimeout(() => setSaveStatus("idle"), 5000); // ✅ thêm dòng này
+    console.error("❌ Lưu thất bại:", res.error);
+  }
+} catch {
+  setSaveStatus("error");
+  setTimeout(() => setSaveStatus("idle"), 5000);   // ✅ thêm dòng này
+  console.error("❌ Lỗi kết nối khi lưu ngầm");
+}
     } else {
       setSaveStatus("error");
       console.error("❌ Lưu thất bại:", res.error);
