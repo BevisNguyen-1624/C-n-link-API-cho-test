@@ -611,7 +611,6 @@ export default function App() {
       const res = await api.get({ action: "verifyReviewer", reviewerId: reviewerId.trim() });
       if (res.ok) {
         setPreview(res);
-        setIsAssigner(res.isAssigner || false);
       } else {
         setError(res.error || "Mã không hợp lệ");
       }
@@ -631,7 +630,6 @@ export default function App() {
       setReviewer(preview);
       setIdeas(res.ideas);
       if (res.sheetUrl) setMySheetUrl(res.sheetUrl);
-      setIsAssigner(res.isAssigner || false);
       const savedProgress = loadProgress(preview.reviewerId);
       if (savedProgress && res.ideas.length > 0) {
         if (savedProgress.currentIdeaKey) {
