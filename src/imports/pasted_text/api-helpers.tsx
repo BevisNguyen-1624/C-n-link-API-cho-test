@@ -581,6 +581,12 @@ export default function App() {
   }, [current, ideas]);
 
   useEffect(() => {
+  if (step === "scoring") {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+}, [current, step]);
+
+  useEffect(() => {
   if (!reviewer || step !== "scoring" || !ideas[current]) return;
   const hasScores = Object.values(scores).some(s => s !== null && s !== undefined);
   if (!hasScores) return;
@@ -781,7 +787,6 @@ export default function App() {
     setStep("done");
   } else {
     setCurrent(c => c + 1);
-    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   // ── Lưu ngầm phía sau ──
