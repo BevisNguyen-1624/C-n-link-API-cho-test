@@ -1019,6 +1019,27 @@ export default function App() {
                   onFocus={(e) => (e.target.style.borderColor = "#38bdf8")}
                   onBlur={(e) => (e.target.style.borderColor = "#bae6fd")} rows={4} />
               </div>
+              {/* Nút "Cần xem xét phòng ban liên quan" */}
+<div
+  onClick={() => setCanXet(v => !v)}
+  style={{
+    width: "100%",
+    padding: "14px 18px",
+    borderRadius: 10,
+    border: canXet ? "2px solid #d97706" : "1.5px solid #bae6fd",
+    background: canXet ? "#fffbeb" : "#f8fafc",
+    cursor: "pointer",
+    transition: "all .2s",
+    textAlign: "center",
+    marginBottom: 20,
+    boxShadow: canXet ? "0 4px 14px rgba(217,119,6,0.25)" : "none",
+  }}
+>
+  <div style={{ fontSize: 22, marginBottom: 6 }}>{canXet ? "✅" : "⬜"}</div>
+  <div style={{ fontWeight: 800, fontSize: 13, color: canXet ? "#d97706" : "#64748b" }}>
+    CẦN SỰ XEM XÉT CỦA PHÒNG BAN LIÊN QUAN
+  </div>
+</div>
               {error && <div style={S.error}>{error}</div>}
               <button style={{ ...S.btnPrimary, opacity: (!allScored || submitting) ? 0.4 : 1 }}
                 onClick={handleSubmitScore} disabled={!allScored || submitting}>
