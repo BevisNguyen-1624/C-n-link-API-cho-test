@@ -552,7 +552,18 @@ export default function App() {
   const [selectedIdeas, setSelectedIdeas] = useState<any[]>([]);
   const [selectedAssignee, setSelectedAssignee] = useState("");
   const [assignmentStats, setAssignmentStats] = useState<Record<string, number>>({});
+const [trackingStats, setTrackingStats] = useState<any[]>([]);
+const [loadingTracking, setLoadingTracking] = useState(false);
 
+const handleGoToTracking = async () => {
+  setLoadingTracking(true);
+  try {
+    const res = await api.get({ action: "getTracking" });
+    if (res.ok) setTrackingStats(res.stats);
+  } catch {}
+  setLoadingTracking(false);
+  setStep("tracking");
+};
   const [adminPin, setAdminPin]           = useState("");
   const [adminUnlocked, setAdminUnlocked] = useState(false);
   const [newYD, setNewYD]                 = useState("");
@@ -1293,7 +1304,84 @@ try {
           )}
         </div>
       )}
+{/* ══ TRACKING ══ */}
+{step === "tracking" && (
+  <div style={{ width: "100%", maxWidth: 900 }}>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+      <h2 style={{ ...S.h1, margin: 0, fontSize: 20, textShadow: "0 0 8px #fff" }}>
+        📊 Tracking kết quả chấm điểm
+      </h2>
+      <button
+        onClick={() => setStep("done")}
+        style={{ background: "rgba(255,255,255,0.8)", border: "1px solid #bae6fd", borderRadius: 8, padding: "8px 16px", fontSize: 13, fontWeight: 700, color: "#0369a1", cursor: "pointer" }}>
+        ← Quay lại
+      </button>
+    </div>
 
+    <div style={{ ...S.card, padding: "0", overflow: "hidden" }}>
+      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+        <thead>
+          <tr style={{ background: "linear-gradient(135deg, #c00000, #e53e3e)", color: "#fff" }}>
+            {["ASM/PHÒNG", "TỔNG SK", "ĐÃ CHẤM", "CÒN LẠI", "TỶ LỆ", "GOOD JOB", "VÀO BẢO VỆ"].map(h => (
+              <th key={h} style={{ padding: "12px 14px", textAlign: "center", fontWeight: 800, fontSize: 11, letterSpacing: 1, whiteSpace: "nowrap" as const }}>{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {trackingStats.length === 0 ? (
+            <tr><td colSpan={7} style={{ textAlign: "center", padding: 40, color: "#94a3b8" }}>Chưa có dữ liệu</td></tr>
+          ) : trackingStats.map((row, i) => {
+            const pct = row.pct || 0;
+            const isGreen = pct >= 100;
+            const isYellow = pct >= 50 && pct < 100;
+            const pctColor = isGreen ? "#16a34a" : isYellow ? "#d97706" : "#ef4444";
+            const pctBg = isGreen ? "#f0fdf4" : isYellow ? "#fffbeb" : "#fef2f2";
+            // Strip prefix T5. cho display
+            const displayName = row.sheetName.replace(/^T\d+\.\s*/i, "");
+            return (
+              <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
+                <td style={{ padding: "10px 14px", fontWeight: 700, color: "#0f172a" }}>{displayName}</td>
+                <td style={{ padding: "10px 14px", textAlign: "center", color: "#64748b" }}>{row.totalIdeas}</td>
+                <td style={{ padding: "10px 14px", textAlign: "center", color: "#0369a1", fontWeight: 700 }}>{row.scoredPairs}</td>
+                <td style={{ padding: "10px 14px", textAlign: "center", color: "#64748b" }}>{row.totalPairs - row.scoredPairs}</td>
+                <td style={{ padding: "10px 14px", textAlign: "center" }}>
+                  <span style={{ background: pctBg, color: pctColor, fontWeight: 800, borderRadius: 6, padding: "4px 10px", fontSize: 12 }}>
+                    {pct.toFixed(1)}%
+                  </span>
+                  <div style={{ marginTop: 4, height: 4, background: "#e2e8f0", borderRadius: 99, overflow: "hidden" }}>
+                    <div style={{ height: "100%", width: `${Math.min(pct, 100)}%`, background: pctColor, borderRadius: 99, transition: "width .4s" }} />
+                  </div>
+                </td>
+                <td style={{ padding: "10px 14px", textAlign: "center", fontWeight: 700, color: "#16a34a" }}>{row.goodJobCount}</td>
+                <td style={{ padding: "10px 14px", textAlign: "center", fontWeight: 700, color: "#3b82f6" }}>{row.baoVeCount}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+        {trackingStats.length > 0 && (
+          <tfoot>
+            <tr style={{ background: "#f0f9ff", borderTop: "2px solid #bae6fd" }}>
+              <td style={{ padding: "10px 14px", fontWeight: 800, color: "#0f172a" }}>TỔNG</td>
+              <td style={{ padding: "10px 14px", textAlign: "center", fontWeight: 800 }}>{trackingStats.reduce((s, r) => s + (r.totalIdeas || 0), 0)}</td>
+              <td style={{ padding: "10px 14px", textAlign: "center", fontWeight: 800, color: "#0369a1" }}>{trackingStats.reduce((s, r) => s + (r.scoredPairs || 0), 0)}</td>
+              <td style={{ padding: "10px 14px", textAlign: "center", fontWeight: 800 }}>{trackingStats.reduce((s, r) => s + (r.totalPairs - r.scoredPairs || 0), 0)}</td>
+              <td style={{ padding: "10px 14px", textAlign: "center" }}>
+                {(() => {
+                  const totalP = trackingStats.reduce((s, r) => s + (r.totalPairs || 0), 0);
+                  const scoredP = trackingStats.reduce((s, r) => s + (r.scoredPairs || 0), 0);
+                  const overall = totalP > 0 ? (scoredP / totalP * 100).toFixed(1) : "0.0";
+                  return <span style={{ fontWeight: 800, color: "#0369a1" }}>{overall}%</span>;
+                })()}
+              </td>
+              <td style={{ padding: "10px 14px", textAlign: "center", fontWeight: 800, color: "#16a34a" }}>{trackingStats.reduce((s, r) => s + (r.goodJobCount || 0), 0)}</td>
+              <td style={{ padding: "10px 14px", textAlign: "center", fontWeight: 800, color: "#3b82f6" }}>{trackingStats.reduce((s, r) => s + (r.baoVeCount || 0), 0)}</td>
+            </tr>
+          </tfoot>
+        )}
+      </table>
+    </div>
+  </div>
+)}
       {/* ══ DONE ══ */}
 {step === "done" && (
   <div style={{ ...S.card, ...S.done }}>
@@ -1306,11 +1394,15 @@ try {
       <button style={{ ...S.btnSecondary, padding: "12px 28px" }}
         onClick={() => { setStep("login"); setPreview(null); setReviewerId(""); setIdeas([]); setReviewer(null); setAssignmentStats({}); setSelectedIdeas([]); setSelectedAssignee(""); }}>
         ← Quay lại trang chủ
-      </button>
-      <a href={PROGRESS_TRACKING_URL} target="_blank" rel="noreferrer"
-        style={{ ...S.btnPrimary, padding: "12px 28px", textDecoration: "none", display: "inline-block" }}>
-        📊 Theo dõi tiến độ chấm
-      </a>
+      <button
+  style={{ ...S.btnPrimary, padding: "12px 28px" }}
+  onClick={handleGoToTracking}
+  disabled={loadingTracking}
+>
+  {loadingTracking
+    ? <><span className="spinner" /><span>Đang tải...</span></>
+    : "📊 Theo dõi tiến độ chấm"}
+</button>
       {mySheetUrl && (
   <a href={mySheetUrl} target="_blank" rel="noreferrer"
     style={{
