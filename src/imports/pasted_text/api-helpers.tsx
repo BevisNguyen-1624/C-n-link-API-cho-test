@@ -903,8 +903,9 @@ try {
           ) : (
             <>
               <button style={S.btnPrimary} 
-              onClick={() => preview?.pendingCount === 0
-  ? window.open(PROGRESS_TRACKING_URL, "_blank")
+              // ✅ Chuyển sang trang tracking nội bộ
+onClick={() => preview?.pendingCount === 0
+  ? handleGoToTracking()
   : handleStart()
 } disabled={loading}
                 onMouseOver={(e) => ((e.target as HTMLButtonElement).style.opacity = "0.85")}
