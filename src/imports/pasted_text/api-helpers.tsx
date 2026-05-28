@@ -1382,43 +1382,46 @@ try {
     </div>
   </div>
 )}
-      {/* ══ DONE ══ */}
-{step === "done" && (
-  <div style={{ ...S.card, ...S.done }}>
-    <div style={{ fontSize: 56, marginBottom: 16 }}>🎉</div>
-    <h2 style={{ ...S.h1, fontSize: 22 }}>Hoàn tất chấm điểm!</h2>
-    <p style={{ color: "#64748b", fontSize: 14, margin: "8px 0 28px" }}>
-      {ideas.length > 0 ? `Đã chấm ${ideas.length} sáng kiến. Kết quả đã được lưu.` : "Hiện không có sáng kiến nào cần chấm."}
-    </p>
-    <div style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "center" }}>
-      <button style={{ ...S.btnSecondary, padding: "12px 28px" }}
-        onClick={() => { setStep("login"); setPreview(null); setReviewerId(""); setIdeas([]); setReviewer(null); setAssignmentStats({}); setSelectedIdeas([]); setSelectedAssignee(""); }}>
-        ← Quay lại trang chủ
-      </button>
-      <button
-        style={{ ...S.btnPrimary, padding: "12px 28px" }}
-        onClick={handleGoToTracking}
-        disabled={loadingTracking}
-      >
-        {loadingTracking
-          ? <><span className="spinner" /><span>Đang tải...</span></>
-          : "📊 Theo dõi tiến độ chấm"}
-      </button>
-      {mySheetUrl && (
-        <a href={mySheetUrl} target="_blank" rel="noreferrer"
-          style={{
-            ...S.btnPrimary,
-            padding: "12px 28px",
-            textDecoration: "none",
-            display: "inline-block",
-            background: "linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)",
-            width: "100%",
-            textAlign: "center",
-            boxSizing: "border-box",
-          }}>
-          📄 Xem sheet chấm của tôi
-        </a>
+     {/* ══ DONE ══ */}
+      {step === "done" && (
+        <div style={{ ...S.card, ...S.done }}>
+          <div style={{ fontSize: 56, marginBottom: 16 }}>🎉</div>
+          <h2 style={{ ...S.h1, fontSize: 22 }}>Hoàn tất chấm điểm!</h2>
+          <p style={{ color: "#64748b", fontSize: 14, margin: "8px 0 28px" }}>
+            {ideas.length > 0 ? `Đã chấm ${ideas.length} sáng kiến. Kết quả đã được lưu.` : "Hiện không có sáng kiến nào cần chấm."}
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "center" }}>
+            <button style={{ ...S.btnSecondary, padding: "12px 28px" }}
+              onClick={() => { setStep("login"); setPreview(null); setReviewerId(""); setIdeas([]); setReviewer(null); setAssignmentStats({}); setSelectedIdeas([]); setSelectedAssignee(""); }}>
+              ← Quay lại trang chủ
+            </button>
+            <button
+              style={{ ...S.btnPrimary, padding: "12px 28px" }}
+              onClick={handleGoToTracking}
+              disabled={loadingTracking}
+            >
+              {loadingTracking
+                ? <><span className="spinner" /><span>Đang tải...</span></>
+                : "📊 Theo dõi tiến độ chấm"}
+            </button>
+            {mySheetUrl && (
+              <a href={mySheetUrl} target="_blank" rel="noreferrer"
+                style={{
+                  ...S.btnPrimary,
+                  padding: "12px 28px",
+                  textDecoration: "none",
+                  display: "inline-block",
+                  background: "linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)",
+                  width: "100%",
+                  textAlign: "center",
+                  boxSizing: "border-box",
+                }}>
+                📄 Xem sheet chấm của tôi
+              </a>
+            )}
+          </div>
+        </div>
       )}
-   
-  </div>
-)}
+    </div>
+  );
+}
