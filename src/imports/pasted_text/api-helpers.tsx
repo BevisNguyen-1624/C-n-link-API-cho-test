@@ -1394,33 +1394,31 @@ try {
       <button style={{ ...S.btnSecondary, padding: "12px 28px" }}
         onClick={() => { setStep("login"); setPreview(null); setReviewerId(""); setIdeas([]); setReviewer(null); setAssignmentStats({}); setSelectedIdeas([]); setSelectedAssignee(""); }}>
         ← Quay lại trang chủ
+      </button>
       <button
-  style={{ ...S.btnPrimary, padding: "12px 28px" }}
-  onClick={handleGoToTracking}
-  disabled={loadingTracking}
->
-  {loadingTracking
-    ? <><span className="spinner" /><span>Đang tải...</span></>
-    : "📊 Theo dõi tiến độ chấm"}
-</button>
+        style={{ ...S.btnPrimary, padding: "12px 28px" }}
+        onClick={handleGoToTracking}
+        disabled={loadingTracking}
+      >
+        {loadingTracking
+          ? <><span className="spinner" /><span>Đang tải...</span></>
+          : "📊 Theo dõi tiến độ chấm"}
+      </button>
       {mySheetUrl && (
-  <a href={mySheetUrl} target="_blank" rel="noreferrer"
-    style={{
-      ...S.btnPrimary,
-      padding: "12px 28px",
-      textDecoration: "none",
-      display: "inline-block",
-      background: "linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)",
-      width: "100%",
-      textAlign: "center",
-      boxSizing: "border-box",
-    }}>
-    📄 Xem sheet chấm của tôi
-  </a>
-)}
+        <a href={mySheetUrl} target="_blank" rel="noreferrer"
+          style={{
+            ...S.btnPrimary,
+            padding: "12px 28px",
+            textDecoration: "none",
+            display: "inline-block",
+            background: "linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)",
+            width: "100%",
+            textAlign: "center",
+            boxSizing: "border-box",
+          }}>
+          📄 Xem sheet chấm của tôi
+        </a>
+      )}
     </div>
   </div>
 )}
-</div>
-  );
-}
