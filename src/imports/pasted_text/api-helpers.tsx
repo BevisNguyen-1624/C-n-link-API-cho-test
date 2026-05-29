@@ -394,8 +394,9 @@ const S: Record<string, any> = {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    padding: "0 16px 60px",},
+    padding: "0 16px 60px",
     overflowX: "hidden",
+  }
   topBar: {
     width: "100%",
     maxWidth: 800,
@@ -1341,7 +1342,7 @@ onClick={() => preview?.pendingCount === 0
   </tr>
 ) : trackingStats.length === 0 ? (
   <tr><td colSpan={7} style={{ textAlign: "center", padding: 40, color: "#94a3b8" }}>Chưa có dữ liệu</td></tr>
-) : trackingStats.map((row, i) => {
+) : trackingStats.map(row => row.totalIdeas > 0).map((row, i) => {
             const pct = row.pctF || 0;
             const isGreen = pct >= 100;
             const isYellow = pct >= 50 && pct < 100;
