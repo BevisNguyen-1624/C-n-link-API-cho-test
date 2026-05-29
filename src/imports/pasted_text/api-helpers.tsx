@@ -1313,8 +1313,8 @@ onClick={() => preview?.pendingCount === 0
     </div>
     <div style={{ background: "rgba(255,255,255,0.9)", borderRadius: 16, overflow: "auto", boxShadow: "0 4px 24px rgba(14,165,233,0.08)" }}>
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 500 }}>
+        </button>
         ← Quay lại
-      </button>
     </div>
 
     <div style={{ ...S.card, padding: "0", overflow: "hidden", overflowX: "auto" }}>
