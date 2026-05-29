@@ -1351,7 +1351,6 @@ onClick={() => preview?.pendingCount === 0
                 <td style={{ padding: "10px 14px", fontWeight: 700, color: "#0f172a" }}>{displayName}</td>
                 <td style={{ padding: "10px 14px", textAlign: "center", color: "#64748b" }}>{row.totalIdeas}</td>
                 <td style={{ padding: "10px 14px", textAlign: "center", color: "#0369a1", fontWeight: 700 }}>{row.scoredPairs}</td>
-                <td style={{ padding: "10px 14px", textAlign: "center", color: "#64748b" }}>{row.totalPairs - row.scoredPairs}</td>
                 <td style={{ padding: "10px 14px", textAlign: "center" }}>
                   <span style={{ background: pctBg, color: pctColor, fontWeight: 800, borderRadius: 6, padding: "4px 10px", fontSize: 12 }}>
                     {pct.toFixed(1)}%
