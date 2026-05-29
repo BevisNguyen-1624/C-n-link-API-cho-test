@@ -395,6 +395,7 @@ const S: Record<string, any> = {
     flexDirection: "column",
     alignItems: "center",
     padding: "0 16px 60px",},
+    overflowX: "hidden",
   topBar: {
     width: "100%",
     maxWidth: 800,
