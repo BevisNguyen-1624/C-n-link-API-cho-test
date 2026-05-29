@@ -1370,23 +1370,30 @@ onClick={() => preview?.pendingCount === 0
         </tbody>
         {trackingStats.length > 0 && (
           <tfoot>
-            <tr style={{ background: "#f0f9ff", borderTop: "2px solid #bae6fd" }}>
-              <td style={{ padding: "10px 14px", fontWeight: 800, color: "#0f172a" }}>TỔNG</td>
-              <td style={{ padding: "10px 14px", textAlign: "center", fontWeight: 800 }}>{trackingStats.reduce((s, r) => s + (r.totalIdeas || 0), 0)}</td>
-              <td style={{ padding: "10px 14px", textAlign: "center", fontWeight: 800, color: "#0369a1" }}>{trackingStats.reduce((s, r) => s + (r.scoredPairs || 0), 0)}</td>
-              <td style={{ padding: "10px 14px", textAlign: "center", fontWeight: 800 }}>{trackingStats.reduce((s, r) => s + (r.totalPairs - r.scoredPairs || 0), 0)}</td>
-              <td style={{ padding: "10px 14px", textAlign: "center" }}>
-                {(() => {
-                  const totalP = trackingStats.reduce((s, r) => s + (r.totalPairs || 0), 0);
-                  const scoredP = trackingStats.reduce((s, r) => s + (r.scoredPairs || 0), 0);
-                  const overall = totalP > 0 ? (scoredP / totalP * 100).toFixed(1) : "0.0";
-                  return <span style={{ fontWeight: 800, color: "#0369a1" }}>{overall}%</span>;
-                })()}
-              </td>
-              <td style={{ padding: "10px 14px", textAlign: "center", fontWeight: 800, color: "#16a34a" }}>{trackingStats.reduce((s, r) => s + (r.goodJobCount || 0), 0)}</td>
-              <td style={{ padding: "10px 14px", textAlign: "center", fontWeight: 800, color: "#3b82f6" }}>{trackingStats.reduce((s, r) => s + (r.baoVeCount || 0), 0)}</td>
-            </tr>
-          </tfoot>
+  <tr style={{ background: "#f0f9ff", borderTop: "2px solid #bae6fd" }}>
+    <td style={{ padding: "10px 14px", fontWeight: 800, color: "#0f172a" }}>TỔNG</td>
+    <td style={{ padding: "10px 14px", textAlign: "center" as const, fontWeight: 800 }}>
+      {trackingStats.reduce((s, r) => s + (r.totalIdeas || 0), 0)}
+    </td>
+    <td style={{ padding: "10px 14px", textAlign: "center" as const, fontWeight: 800, color: "#0369a1" }}>
+      {trackingStats.reduce((s, r) => s + (r.scoredPairs || 0), 0)}
+    </td>
+    <td style={{ padding: "10px 14px", textAlign: "center" as const }}>
+      {(() => {
+        const totalIdeas = trackingStats.reduce((s, r) => s + (r.totalIdeas || 0), 0);
+        const scoredPairs = trackingStats.reduce((s, r) => s + (r.scoredPairs || 0), 0);
+        const overall = totalIdeas > 0 ? Math.min(scoredPairs / totalIdeas * 100, 100).toFixed(1) : "0.0";
+        return <span style={{ fontWeight: 800, color: "#0369a1" }}>{overall}%</span>;
+      })()}
+    </td>
+    <td style={{ padding: "10px 14px", textAlign: "center" as const, fontWeight: 800, color: "#16a34a" }}>
+      {trackingStats.reduce((s, r) => s + (r.goodJobCount || 0), 0)}
+    </td>
+    <td style={{ padding: "10px 14px", textAlign: "center" as const, fontWeight: 800, color: "#3b82f6" }}>
+      {trackingStats.reduce((s, r) => s + (r.baoVeCount || 0), 0)}
+    </td>
+  </tr>
+</tfoot>
         )}
       </table>
     </div>
