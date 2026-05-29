@@ -1323,7 +1323,7 @@ onClick={() => preview?.pendingCount === 0
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
         <thead>
           <tr style={{ background: "linear-gradient(135deg, #c00000, #e53e3e)", color: "#fff" }}>
-            {["OM/PHÒNG", "TỔNG SK", "ĐÃ CHẤM", "TỶ LỆ", "GOOD JOB", "VÀO VÒNG BẢO VỆ"].map(h => (
+            {["OM/PHÒNG", "TỔNG SK", "ĐÃ CHẤM", "TỶ LỆ", "GOOD JOB", "BẢO VỆ"].map(h => (
               <th key={h} style={{ padding: "12px 14px", textAlign: "center", fontWeight: 800, fontSize: 11, letterSpacing: 1, whiteSpace: "nowrap" as const }}>{h}</th>
             ))}
           </tr>
