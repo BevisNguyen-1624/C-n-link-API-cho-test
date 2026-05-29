@@ -1307,14 +1307,12 @@ onClick={() => preview?.pendingCount === 0
       )}
 {/* ══ TRACKING ══ */}
 {step === "tracking" && (
-  <div style={{ width: "100%", maxWidth: "100%" }}>
+  <div style={{ width: "100%", maxWidth: 800, boxSizing: "border-box" as const }}>
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-      <h2 style={{ ...S.h1, margin: 0, fontSize: 20, textShadow: "0 0 8px #fff" }}>
-        📊 Tracking kết quả chấm điểm
-      </h2>
-      <button
-        onClick={() => setStep("done")}
-        style={{ background: "rgba(255,255,255,0.8)", border: "1px solid #bae6fd", borderRadius: 8, padding: "8px 16px", fontSize: 13, fontWeight: 700, color: "#0369a1", cursor: "pointer" }}>
+      ...header...
+    </div>
+    <div style={{ background: "rgba(255,255,255,0.9)", borderRadius: 16, overflow: "auto", boxShadow: "0 4px 24px rgba(14,165,233,0.08)" }}>
+      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 500 }}>
         ← Quay lại
       </button>
     </div>
