@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import bgImage from "../KV_HÒ_YO_TA-01.jpeg";
 import boatImage from "../boat.png";
 
-const API_URL = "https://script.google.com/macros/s/AKfycbxxoHGfCZuaDqY1k3GuZJeVJtc0fG4aDu30cQyC_i6dg6igl2kkrX1oUJUbpB9prZQ/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycby-ue8RdSeUQ1NLLhyYyD_RGtjxYhbe2CaSZBm4z5PfAjFaD4aW22M6fDGObYYxHeA/exec";
 const USE_MOCK = false;
 const ADMIN_PIN = "1234";
 const LS_KEY = "hoYoTa_reviewers";
@@ -1323,7 +1323,7 @@ onClick={() => preview?.pendingCount === 0
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
         <thead>
           <tr style={{ background: "linear-gradient(135deg, #c00000, #e53e3e)", color: "#fff" }}>
-            {["ASM/PHÒNG", "TỔNG SK", "ĐÃ CHẤM", "CÒN LẠI", "TỶ LỆ", "GOOD JOB", "VÀO BẢO VỆ"].map(h => (
+            {["OM/PHÒNG", "TỔNG SK", "ĐÃ CHẤM", "CÒN LẠI", "TỶ LỆ", "GOOD JOB", "VÀO BẢO VỆ"].map(h => (
               <th key={h} style={{ padding: "12px 14px", textAlign: "center", fontWeight: 800, fontSize: 11, letterSpacing: 1, whiteSpace: "nowrap" as const }}>{h}</th>
             ))}
           </tr>
