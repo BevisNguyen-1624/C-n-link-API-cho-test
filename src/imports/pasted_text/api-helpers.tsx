@@ -1308,7 +1308,7 @@ onClick={() => preview?.pendingCount === 0
       )}
 {/* ══ TRACKING ══ */}
 {step === "tracking" && (
-  <div style={{ width: "100%", maxWidth: 860, margin: "0 auto", boxSizing: "border-box" as const }}>
+  <div style={{ width: "100%", maxWidth: 860, boxSizing: "border-box" as const }}>
     
     {/* Header */}
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
