@@ -1320,7 +1320,7 @@ onClick={() => preview?.pendingCount === 0
     </div>
 
     <div style={{ ...S.card, padding: "0", overflow: "hidden", overflowX: "auto" }}>
-      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, tableLayout: "fixed" }}>
+      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13}}>
         <thead>
           <tr style={{ background: "linear-gradient(135deg, #c00000, #e53e3e)", color: "#fff" }}>
             {["OM/PHÒNG", "TỔNG SK", "ĐÃ CHẤM", "TỶ LỆ", "GOOD JOB", "BẢO VỆ"].map(h => (
