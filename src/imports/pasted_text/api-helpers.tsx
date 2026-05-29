@@ -1307,7 +1307,7 @@ onClick={() => preview?.pendingCount === 0
       )}
 {/* ══ TRACKING ══ */}
 {step === "tracking" && (
-  <div style={{ width: "100%", maxWidth: 900 }}>
+  <div style={{ width: "100%", maxWidth: "100%" }}>
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
       <h2 style={{ ...S.h1, margin: 0, fontSize: 20, textShadow: "0 0 8px #fff" }}>
         📊 Tracking kết quả chấm điểm
