@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import bgImage from "../KV_HÒ_YO_TA-01.jpeg";
 import boatImage from "../boat.png";
 
-const API_URL = "https://script.google.com/macros/s/AKfycbwhwdoUBKMX5hl6piSyx6ZjiWe2P84HDIuf9GMAXfXgwxRh-qhcs7H7y5lhf975zlg/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxxoHGfCZuaDqY1k3GuZJeVJtc0fG4aDu30cQyC_i6dg6igl2kkrX1oUJUbpB9prZQ/exec";
 const USE_MOCK = false;
 const ADMIN_PIN = "1234";
 const LS_KEY = "hoYoTa_reviewers";
@@ -556,13 +556,13 @@ const [trackingStats, setTrackingStats] = useState<any[]>([]);
 const [loadingTracking, setLoadingTracking] = useState(false);
 
 const handleGoToTracking = async () => {
+  setStep("tracking");        // ← chuyển trang NGAY
   setLoadingTracking(true);
   try {
     const res = await api.get({ action: "getTracking" });
     if (res.ok) setTrackingStats(res.stats);
   } catch {}
   setLoadingTracking(false);
-  setStep("tracking");
 };
   const [adminPin, setAdminPin]           = useState("");
   const [adminUnlocked, setAdminUnlocked] = useState(false);
@@ -1329,10 +1329,17 @@ onClick={() => preview?.pendingCount === 0
           </tr>
         </thead>
         <tbody>
-          {trackingStats.length === 0 ? (
-            <tr><td colSpan={7} style={{ textAlign: "center", padding: 40, color: "#94a3b8" }}>Chưa có dữ liệu</td></tr>
-          ) : trackingStats.map((row, i) => {
-            const pct = row.pct || 0;
+          {loadingTracking ? (
+  <tr>
+    <td colSpan={7} style={{ padding: 40, textAlign: "center" as const }}>
+      <span className="spinner" style={{ width: 20, height: 20, borderWidth: 3, display: "inline-block", borderColor: "rgba(0,0,0,0.15)", borderTopColor: "#0ea5e9" }} />
+      <span style={{ marginLeft: 10, color: "#64748b", fontWeight: 600 }}>Đang tải dữ liệu...</span>
+    </td>
+  </tr>
+) : trackingStats.length === 0 ? (
+  <tr><td colSpan={7} style={{ textAlign: "center", padding: 40, color: "#94a3b8" }}>Chưa có dữ liệu</td></tr>
+) : trackingStats.map((row, i) => {
+            const pct = row.pctF || 0;
             const isGreen = pct >= 100;
             const isYellow = pct >= 50 && pct < 100;
             const pctColor = isGreen ? "#16a34a" : isYellow ? "#d97706" : "#ef4444";
